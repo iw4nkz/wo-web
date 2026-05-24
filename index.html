@@ -189,7 +189,7 @@
         <button class="btn" id="adminBtn">Dashboard Admin</button>
     </section>
 </div>
-<footer>© 2025 Wedding Organizer Elegan — Mewujudkan hari spesialmu</footer>
+<footer>© 2026 Wedding Organizer Elegan — Mewujudkan hari spesialmu</footer>
 
 <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbysta19lxD2zaracUnavzgNwA5X1Ozbacem6w31XxQBTKxLuXi3BXMZ_mJgMfhvTmbO/exec"; // GANTI INI!
@@ -325,12 +325,14 @@
     }
     
     // Admin Button (pake location.href biar ga diblokir HP)
-    document.getElementById('adminBtn').addEventListener('click', () => {
-        const pwd = prompt('Masukkan password admin:');
-        if(pwd) {
-            window.location.href = GAS_URL + '?password=' + pwd + '&referrer=' + encodeURIComponent(window.location.href);
-        }
-    });
+document.getElementById('adminBtn').addEventListener('click', () => {
+    const pwd = prompt('Masukkan password admin:');
+    if(pwd) {
+        // GANTI URL_INI_DENGAN_URL_GAS_BARU_KAMU
+        const GAS_URL_BARU = "https://script.google.com/macros/s/AKfycbysta19lxD2zaracUnavzgNwA5X1Ozbacem6w31XxQBTKxLuXi3BXMZ_mJgMfhvTmbO/exec";
+        window.location.href = GAS_URL_BARU + '?password=' + pwd + '&referrer=' + encodeURIComponent(window.location.href);
+    }
+});
     
     loadData();
     loadWishMessages();
