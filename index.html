@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Wedding Organizer | RSVP Elegan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #0a0a0a;
+            color: #e0d9d1;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+        h1, h2, h3, .logo, .judul-countdown { font-family: 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: 2px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        section { margin: 80px 0; padding: 20px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.pexels.com/photos/1024993/flowers-bouquet-wedding-romantic-1024993.jpeg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .hero h1 { font-size: 4rem; margin-bottom: 1rem; color: #d4af37; }
+        .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: #ccc; }
+        .btn {
+            display: inline-block;
+            background: #d4af37;
+            color: #0a0a0a;
+            padding: 12px 30px;
+            margin-top: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 40px;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover { background: #b8942e; transform: scale(1.02); }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid #d4af37;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 20px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #f0f0f0;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+        .countdown-box {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+        .time {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 20px;
+            min-width: 100px;
+        }
+        .time span { font-size: 2.5rem; font-weight: bold; color: #d4af37; display: block; }
+        footer { text-align: center; padding: 30px; font-size: 0.8rem; opacity: 0.7; }
+        @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .time { min-width: 70px; padding: 10px; } }
+    </style>
+</head>
+<body>
+<div class="hero">
+    <div>
+        <h1>Love & Elegance</h1>
+        <p>Setiap momen istimewa layak dikenang. WO profesional untuk hari spesialmu.</p>
+        <a href="#rsvp" class="btn">Konfirmasi Kehadiran</a>
+    </div>
+</div>
+<div class="container">
+    <!-- Countdown -->
+    <section id="countdown">
+        <h2 style="text-align:center;">Menuju Hari Bahagia</h2>
+        <div class="countdown-box" id="timer">
+            <div class="time"><span id="days">00</span> Hari</div>
+            <div class="time"><span id="hours">00</span> Jam</div>
+            <div class="time"><span id="minutes">00</span> Menit</div>
+            <div class="time"><span id="seconds">00</span> Detik</div>
+        </div>
+    </section>
+
+    <!-- Galeri Sederhana -->
+    <section>
+        <h2>Galeri Inspirasi</h2>
+        <div class="grid-2">
+            <div class="card">🎬 Dekorasi Artistik</div>
+            <div class="card">🍷 Meja Makan Elegan</div>
+            <div class="card">💐 Bunga Segar Import</div>
+            <div class="card">📸 Dokumentasi Premium</div>
+        </div>
+    </section>
+
+    <!-- RSVP Form -->
+    <section id="rsvp">
+        <h2>Konfirmasi Kehadiran</h2>
+        <form id="rsvpForm">
+            <div class="grid-2">
+                <div><label>Nama Lengkap</label><input type="text" id="nama" required></div>
+                <div><label>Jumlah Tamu</label><input type="number" id="jumlah" value="1" min="1" required></div>
+            </div>
+            <div><label>Kehadiran</label>
+                <select id="kehadiran" required><option value="Hadir">Hadir</option><option value="Tidak Hadir">Tidak Hadir</option></select>
+            </div>
+            <div><label>Pesan/Ucapan (opsional)</label><textarea id="pesan" rows="3"></textarea></div>
+            <button type="submit" class="btn">Kirim Konfirmasi</button>
+            <div id="notifMsg" style="margin-top:15px; font-weight:bold;"></div>
+        </form>
+    </section>
+
+    <!-- Peta Lokasi & WA -->
+    <section>
+        <h2>Lokasi & Kontak</h2>
+        <div class="grid-2">
+            <div><iframe width="100%" height="250" style="border:0; border-radius: 15px;" loading="lazy" allowfullscreen src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521..."></iframe><p class="card" style="margin-top:10px;">Grand Ballroom, Jakarta Selatan</p></div>
+            <div class="card"><h3>Hubungi WO Kami</h3><p>📞 +62 812 3456 7890</p><a href="https://wa.me/6281234567890?text=Halo%20WO%2C%20saya%20butuh%20info%20wedding" class="btn" style="background:#25D366;">Chat WhatsApp</a></div>
+        </div>
+    </section>
+</div>
+<footer>© 2025 Wedding Organizer Elegan — Mewujudkan hari spesialmu</footer>
+
+<script>
+    // COUNTDOWN (set tanggal target: ubah sesuai kebutuhan, format bulan-1 ya: 2025,11,25)
+    const targetDate = new Date(2025, 10, 25, 16, 0, 0); // 25 November 2025 jam 16:00
+    function updateCountdown() {
+        const now = new Date();
+        const diff = targetDate - now;
+        if(diff < 0) { document.getElementById('timer').innerHTML = "<div class='time'>Acara telah berlangsung</div>"; return; }
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % (86400000)) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        document.getElementById('days').innerText = days;
+        document.getElementById('hours').innerText = hours;
+        document.getElementById('minutes').innerText = minutes;
+        document.getElementById('seconds').innerText = seconds;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // FORM RSVP ke GAS
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbysta19lxD2zaracUnavzgNwA5X1Ozbacem6w31XxQBTKxLuXi3BXMZ_mJgMfhvTmbO/exec"; // <--- GANTI INI !
+    const form = document.getElementById('rsvpForm');
+    const notif = document.getElementById('notifMsg');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        notif.innerHTML = "Mengirim...";
+        const params = new URLSearchParams();
+        params.append("nama", document.getElementById('nama').value);
+        params.append("jumlah", document.getElementById('jumlah').value);
+        params.append("kehadiran", document.getElementById('kehadiran').value);
+        params.append("pesan", document.getElementById('pesan').value);
+        try {
+            const resp = await fetch(GAS_URL, { method: "POST", body: params });
+            const hasil = await resp.json();
+            if(hasil.status === "sukses") {
+                notif.innerHTML = "✅ Konfirmasi terkirim! Terima kasih.";
+                form.reset();
+            } else throw new Error();
+        } catch(err) { notif.innerHTML = "❌ Gagal kirim. Coba ulang ya."; }
+    });
+</script>
+</body>
+</html>
