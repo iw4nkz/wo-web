@@ -198,17 +198,30 @@
     
     // Load semua data dari GAS
     async function loadData() {
-        try {
-            const res = await fetch(GAS_URL + "?getSettings=true");
-            const data = await res.json();
-            settings = data.settings || {};
-            gallery = data.gallery || [];
-            applySettings();
-            renderGallery();
-        } catch(err) {
-            console.error("Gagal load data:", err);
+    try {
+        console.log("Loading data from:", GAS_URL);
+        const res = await fetch(GAS_URL + "?getSettings=true");
+        const data = await res.json();
+        console.log("Data dari GAS:", data);
+        
+        if(data.error) {
+            console.error("Error dari GAS:", data.error);
+            return;
         }
+        
+        settings = data.settings || {};
+        gallery = data.gallery || [];
+        
+        console.log("Settings:", settings);
+        console.log("Gallery length:", gallery.length);
+        
+        applySettings();
+        renderGallery();
+    } catch(err) {
+        console.error("Gagal load data:", err);
+        document.getElementById('galleryContainer').innerHTML = "<p>Gagal memuat data dari server. Periksa koneksi atau URL GAS.</p>";
     }
+}
     
     function applySettings() {
         // Hero
@@ -248,17 +261,31 @@
     }
     
     function renderGallery() {
-        const container = document.getElementById('galleryContainer');
-        if(!gallery.length) {
-            container.innerHTML = "<p>Belum ada gambar galeri. Tambahkan di Sheet Galeri!</p>";
-            return;
-        }
-        let html = "";
-        gallery.forEach(img => {
-            html += `<div><img class="gallery-img" src="${img.url}" alt="${img.caption}"><p>${img.caption}</p></div>`;
-        });
-        container.innerHTML = html;
+    const container = document.getElementById('galleryContainer');
+    if(!container) {
+        console.error("Element galleryContainer tidak ditemukan!");
+        return;
     }
+    
+    if(!gallery || gallery.length === 0) {
+        container.innerHTML = '<p>Belum ada gambar galeri. Tambahkan di Sheet "Galeri"!</p>';
+        return;
+    }
+    
+    let html = "";
+    gallery.forEach(img => {
+        const imgUrl = img.url || "";
+        const caption = img.caption || "Galeri";
+        html += `
+            <div class="gallery-item">
+                <img class="gallery-img" src="${imgUrl}" alt="${caption}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Gambar+Gagal+Load'">
+                <p>${caption}</p>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+    console.log("Galeri berhasil di-render, jumlah gambar:", gallery.length);
+}
     
     // Countdown
     let targetDate = new Date(2025, 10, 25, 16, 0, 0);
