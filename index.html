@@ -192,7 +192,7 @@
 <footer>© 2026 Wedding Organizer Elegan — Mewujudkan hari spesialmu</footer>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbysta19lxD2zaracUnavzgNwA5X1Ozbacem6w31XxQBTKxLuXi3BXMZ_mJgMfhvTmbO/exec"; // GANTI INI!
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxmuYIbYIRtXqDiGXbKDbolPA8b1OdCPemghsCRX-wS-cF-SXAxR5_o9X3Y1DYAG-kl/exec"; // GANTI INI!
     let settings = {};
     let gallery = [];
     
@@ -288,7 +288,7 @@
 }
     
     // Countdown
-    let targetDate = new Date(2025, 10, 25, 16, 0, 0);
+    let targetDate = new Date(2026, 06, 27, 16, 0, 0);
     function updateCountdown() {
         const now = new Date();
         const diff = targetDate - now;
@@ -352,12 +352,12 @@
     }
     
     // Admin Button (pake location.href biar ga diblokir HP)
+// Admin Button (perbaikan)
 document.getElementById('adminBtn').addEventListener('click', () => {
     const pwd = prompt('Masukkan password admin:');
     if(pwd) {
-        // GANTI URL_INI_DENGAN_URL_GAS_BARU_KAMU
-        const GAS_URL_BARU = "https://script.google.com/macros/s/AKfycbysta19lxD2zaracUnavzgNwA5X1Ozbacem6w31XxQBTKxLuXi3BXMZ_mJgMfhvTmbO/exec";
-        window.location.href = GAS_URL_BARU + '?password=' + pwd + '&referrer=' + encodeURIComponent(window.location.href);
+        // Langsung pakai variabel GAS_URL yang sudah di-update
+        window.location.href = GAS_URL + '?password=' + pwd + '&referrer=' + encodeURIComponent(window.location.href);
     }
 });
     
