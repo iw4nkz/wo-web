@@ -213,8 +213,32 @@
         return;
     }
     
-    // Urutkan: pesan yang belum dibaca di atas (bisa ditandai nanti)
-    // Untuk sementara, tampilkan semua dengan tombol aksi
+    // Simpan data ke variable global
+    window.allMessages = messages;
+    
+    // Langsung render aja, tanpa buka div lagi
+    renderPesanList(messages);
+    
+    // Pasang event listener buat filter (nanti)
+    setTimeout(() => {
+        const searchInput = document.getElementById('searchPesanInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                filterPesanList();
+            });
+        }
+    }, 100);
+}
+
+// Fungsi render list pesan (dengan filter)
+function renderPesanList(messages) {
+    const container = document.getElementById('pesanContainer');
+    if (!container) return;
+    
+    if (!messages || !messages.length) {
+        container.innerHTML = '<div class="bg-white rounded-2xl border border-stone-200 p-8 text-center"><p class="text-stone-500">📭 Belum ada pesan masuk</p></div>';
+        return;
+    }
     
     let html = `
         <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
@@ -231,35 +255,8 @@
             <div id="pesanListContainer" class="divide-y divide-stone-100">
     `;
     
-    // Simpan data ke variable global buat filter
-    window.allMessages = messages;
-    renderPesanList(messages);
-    
-    html += `</div></div>`;
-    container.innerHTML = html;
-    
-    // Pasang event listener buat filter
-    const searchInput = document.getElementById('searchPesanInput');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function() {
-            filterPesanList();
-        });
-    }
-}
-
-// Fungsi render list pesan (dengan filter)
-function renderPesanList(messages) {
-    const container = document.getElementById('pesanListContainer');
-    if (!container) return;
-    
-    if (!messages || !messages.length) {
-        container.innerHTML = '<div class="p-8 text-center text-stone-500">📭 Tidak ada pesan yang cocok</div>';
-        return;
-    }
-    
-    let html = '';
+    // Render daftar pesan
     messages.forEach((msg, idx) => {
-        // Konversi whatsapp ke string
         let waRaw = msg.whatsapp;
         let waNumber = '';
         if (waRaw) {
@@ -267,11 +264,8 @@ function renderPesanList(messages) {
         }
         let waDisplay = waNumber ? waNumber : (waRaw || '-');
         
-        // Buat ID unik buat baris pesan (pakai timestamp + indeks)
-        const pesanId = 'pesan_' + (msg.waktu?.replace(/[^0-9]/g, '') || Date.now()) + '_' + idx;
-        
         html += `
-            <div id="${pesanId}" class="p-4 hover:bg-stone-50/50 transition border-l-4 border-l-transparent hover:border-l-amber-300">
+            <div class="p-4 hover:bg-stone-50/50 transition border-l-4 border-l-transparent hover:border-l-amber-300">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                     <div class="flex-1">
                         <div class="flex flex-wrap items-center gap-2 mb-2">
@@ -288,7 +282,7 @@ function renderPesanList(messages) {
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.972 3.6 1.488 5.571 1.487 5.522 0 10.012-4.49 10.012-10.011 0-2.672-1.041-5.184-2.931-7.074-1.89-1.89-4.401-2.93-7.073-2.93-5.523 0-10.012 4.49-10.012 10.012 0 1.894.531 3.74 1.537 5.336l.496.788-1.079 3.942 4.064-1.062.792.514zm5.941-5.998c-.338-.152-1.987-.966-2.281-1.076-.274-.118-.483-.18-.698.18-.215.36-.826 1.068-1.017 1.292-.191.224-.372.254-.71.092-.913-.453-1.906-1.114-2.597-2.008-.208-.27-.319-.54-.319-.786 0-.247.059-.356.149-.506.09-.15.188-.27.281-.405.094-.135.149-.236.224-.394.075-.158.037-.292-.019-.41-.056-.118-.648-1.564-.888-2.14-.234-.562-.472-.485-.65-.494-.175-.009-.375-.011-.575-.011-.2 0-.525.075-.8.375-.275.3-1.05 1.027-1.05 2.5 0 1.474 1.074 2.9 1.224 3.101.15.202 2.105 3.227 5.104 4.525.714.309 1.27.493 1.705.63.716.227 1.367.195 1.882.118.575-.086 1.787-.73 2.039-1.435.252-.705.252-1.31.177-1.435-.075-.125-.275-.202-.575-.354z"/></svg>
                             WA
                         </a>` : '<span class="text-stone-400 text-xs text-center">No WA</span>'}
-                        <button onclick="hapusPesan('${pesanId}', ${idx})" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition shadow-sm">
+                        <button onclick="hapusPesan(${idx})" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition shadow-sm">
                             🗑️ Hapus
                         </button>
                     </div>
@@ -297,9 +291,17 @@ function renderPesanList(messages) {
         `;
     });
     
+    html += `</div></div>`;
     container.innerHTML = html;
+    
+    // Pasang event listener filter
+    const searchInput = document.getElementById('searchPesanInput');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            filterPesanList();
+        });
+    }
 }
-
 // Fungsi filter pesan
 function filterPesanList() {
     const searchInput = document.getElementById('searchPesanInput');
