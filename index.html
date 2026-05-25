@@ -91,6 +91,27 @@
                 msg.classList.add('text-red-600');
             });
         });
+
+        // Fungsi untuk mengambil konten dari Kamar Admin (Google Sheets)
+async function loadContent() {
+    const response = await fetch(scriptURL);
+    const data = await response.json();
+    
+    data.forEach(item => {
+        const element = document.getElementById(item.id);
+        if (element) {
+            // Jika konten punya gambar, ganti src-nya
+            if (item.gambarurl && element.tagName === 'IMG') {
+                element.src = item.gambarurl;
+            } else {
+                element.innerText = item.deskripsi;
+            }
+        }
+    });
+}
+
+// Jalankan fungsi saat web dibuka
+window.onload = loadContent;
     </script>
 </body>
 </html>
