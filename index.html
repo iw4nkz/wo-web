@@ -2,367 +2,95 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Wedding Organizer | Dynamic</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WO Pangkalan Bun | Mewujudkan Pernikahan Impian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: #0a0a0a;
-            color: #e0d9d1;
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-        }
-        h1, h2, h3, .logo, .judul-countdown { font-family: 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: 2px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        section { margin: 80px 0; padding: 20px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
-        .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), var(--hero-bg, url('https://images.pexels.com/photos/1024993/flowers-bouquet-wedding-romantic-1024993.jpeg'));
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .hero h1 { font-size: 4rem; margin-bottom: 1rem; color: #d4af37; }
-        .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: #ccc; }
-        .btn {
-            display: inline-block;
-            background: #d4af37;
-            color: #0a0a0a;
-            padding: 12px 30px;
-            margin-top: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            border-radius: 40px;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover { background: #b8942e; transform: scale(1.02); }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 15px;
-            border-left: 4px solid #d4af37;
-        }
-        .gallery-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0 20px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: #f0f0f0;
-            border-radius: 8px;
-            font-family: inherit;
-        }
-        .countdown-box {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
-            text-align: center;
-        }
-        .time {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 20px;
-            min-width: 100px;
-        }
-        .time span { font-size: 2.5rem; font-weight: bold; color: #d4af37; display: block; }
-        .wish-item {
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 3px solid #d4af37;
-        }
-        .wish-name { color: #d4af37; font-weight: bold; }
-        footer { text-align: center; padding: 30px; font-size: 0.8rem; opacity: 0.7; }
-        .rek-box {
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .time { min-width: 70px; padding: 10px; } }
+        body { font-family: 'Poppins', sans-serif; }
+        h1, h2 { font-family: 'Playfair Display', serif; }
     </style>
 </head>
-<body>
-<div class="hero" id="hero">
-    <div>
-        <h1 id="heroTitle">Loading...</h1>
-        <p id="heroSubtitle"></p>
-        <a href="#rsvp" class="btn">Konfirmasi Kehadiran</a>
-    </div>
-</div>
-<div class="container">
-    <section id="countdown">
-        <h2 style="text-align:center;">Menuju Hari Bahagia</h2>
-        <div class="countdown-box" id="timer">
-            <div class="time"><span id="days">00</span> Hari</div>
-            <div class="time"><span id="hours">00</span> Jam</div>
-            <div class="time"><span id="minutes">00</span> Menit</div>
-            <div class="time"><span id="seconds">00</span> Detik</div>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-amber-700">Cita & Rias</h1>
+            <div class="space-x-6 hidden md:block">
+                <a href="#" class="hover:text-amber-600 transition">Home</a>
+                <a href="#paket" class="hover:text-amber-600 transition">Paket</a>
+                <a href="#booking" class="bg-amber-700 text-white px-5 py-2 rounded-full hover:bg-amber-800">Booking</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="h-screen flex items-center justify-center relative overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" class="absolute inset-0 w-full h-full object-cover brightness-50" alt="Wedding Background">
+        <div class="relative z-10 text-center text-white px-4">
+            <h2 class="text-5xl md:text-7xl mb-4">Elegansi Pernikahan Tradisional & Modern</h2>
+            <p class="text-lg md:text-xl mb-8 font-light italic">Melayani dengan hati di Pangkalan Bun dan sekitarnya.</p>
+            <a href="#booking" class="border-2 border-white px-10 py-3 rounded-full hover:bg-white hover:text-amber-900 transition-all font-semibold">Konsultasi Sekarang</a>
         </div>
     </section>
 
-    <section id="gallerySection">
-        <h2>Galeri Inspirasi</h2>
-        <div class="grid-3" id="galleryContainer">Loading gambar...</div>
-    </section>
-
-    <section id="rsvp">
-        <h2>Konfirmasi Kehadiran</h2>
-        <form id="rsvpForm">
-            <div class="grid-2">
-                <div><label>Nama Lengkap</label><input type="text" id="nama" required></div>
-                <div><label>Jumlah Tamu</label><input type="number" id="jumlah" value="1" min="1" required></div>
-            </div>
-            <div class="grid-2">
-                <div><label>Kehadiran</label>
-                    <select id="kehadiran" required><option value="Hadir">Hadir</option><option value="Tidak Hadir">Tidak Hadir</option></select>
+    <!-- FORM BOOKING (Integrasi Apps Script) -->
+    <section id="booking" class="py-20 px-4">
+        <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden p-8">
+            <h3 class="text-3xl font-bold text-center mb-6 text-slate-700">Formulir Pertemuan</h3>
+            <form id="weddingForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Nama Lengkap</label>
+                    <input type="text" name="nama" required class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
-                <div><label>Pilihan Menu Makanan</label>
-                    <select id="menu" required><option value="Ayam">🍗 Ayam</option><option value="Ikan">🐟 Ikan</option><option value="Vegetarian">🥗 Vegetarian</option></select>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">WhatsApp</label>
+                    <input type="tel" name="whatsapp" required class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
-            </div>
-            <div><label>Pesan/Ucapan untuk Mempelai (opsional)</label><textarea id="pesan" rows="2"></textarea></div>
-            <div><label>💌 Wish Message / Doa untuk Pasangan (akan ditampilkan di halaman)</label><textarea id="wishMessage" rows="2" placeholder="Semoga bahagia selalu..."></textarea></div>
-            <div><label>🔒 Captcha: 3 + 4 = ?</label><input type="text" id="captcha" placeholder="Jawaban" required></div>
-            <button type="submit" class="btn">Kirim Konfirmasi</button>
-            <div id="notifMsg" style="margin-top:15px; font-weight:bold;"></div>
-        </form>
-    </section>
-
-    <section>
-        <h2>💝 Guest Book & Wish Message</h2>
-        <div id="wishList"><p>Loading ucapan...</p></div>
-    </section>
-
-    <section id="bankSection">
-        <h2>🎁 Kirim Kado Pernikahan</h2>
-        <div class="rek-box" id="rekeningBox">
-            <span>Loading rekening...</span>
-            <button class="btn" id="copyRekBtn" style="padding: 8px 20px; margin-top:0;">Salin Rekening</button>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Pilih Paket</label>
+                    <select name="paket" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="Silver">Paket Silver (Ekonomis)</option>
+                        <option value="Gold">Paket Gold (Favorit)</option>
+                        <option value="Custom">Custom Service</option>
+                    </select>
+                </div>
+                <button type="submit" id="submitBtn" class="w-full bg-amber-700 text-white py-4 rounded-xl font-bold hover:bg-amber-800 transition">KIRIM JADWAL KONSULTASI</button>
+            </form>
+            <div id="responseMsg" class="mt-4 text-center hidden font-semibold"></div>
         </div>
     </section>
 
-    <section id="lokasiSection">
-        <h2>Lokasi & Kontak</h2>
-        <div class="grid-2">
-            <div id="mapContainer">Loading peta...</div>
-            <div class="card" id="waContainer">
-                <h3>Hubungi WO Kami</h3>
-                <p>Loading nomor...</p>
-                <a href="#" id="waLink" class="btn" style="background:#25D366;">Chat WhatsApp</a>
-            </div>
-        </div>
-    </section>
+    <!-- JAVASCRIPT INTEGRATION -->
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
+        const form = document.getElementById('weddingForm');
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('responseMsg');
 
-    <section>
-        <h2>🔐 Admin Area</h2>
-        <p>Klik tombol di bawah untuk melihat semua data RSVP & Guest Book (butuh password).</p>
-        <button class="btn" id="adminBtn">Dashboard Admin</button>
-    </section>
-</div>
-<footer>© 2026 Wedding Organizer Elegan — Mewujudkan hari spesialmu</footer>
-
-<script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxmuYIbYIRtXqDiGXbKDbolPA8b1OdCPemghsCRX-wS-cF-SXAxR5_o9X3Y1DYAG-kl/exec"; // GANTI INI!
-    let settings = {};
-    let gallery = [];
-    
-    // Load semua data dari GAS
-    async function loadData() {
-    try {
-        console.log("Loading data from:", GAS_URL);
-        const res = await fetch(GAS_URL + "?getSettings=true");
-        const data = await res.json();
-        console.log("Data dari GAS:", data);
-        
-        if(data.error) {
-            console.error("Error dari GAS:", data.error);
-            return;
-        }
-        
-        settings = data.settings || {};
-        gallery = data.gallery || [];
-        
-        console.log("Settings:", settings);
-        console.log("Gallery length:", gallery.length);
-        
-        applySettings();
-        renderGallery();
-    } catch(err) {
-        console.error("Gagal load data:", err);
-        document.getElementById('galleryContainer').innerHTML = "<p>Gagal memuat data dari server. Periksa koneksi atau URL GAS.</p>";
-    }
-}
-    
-    function applySettings() {
-        // Hero
-        document.getElementById('heroTitle').innerText = settings.hero_title || "Love & Elegance";
-        document.getElementById('heroSubtitle').innerText = settings.hero_subtitle || "Setiap momen istimewa layak dikenang.";
-        if(settings.hero_background) {
-            document.getElementById('hero').style.setProperty('--hero-bg', `url(${settings.hero_background})`);
-        }
-        
-        // Countdown target
-        if(settings.tanggal_acara) {
-            targetDate = new Date(settings.tanggal_acara);
-            updateCountdown();
-        }
-        
-        // Lokasi & Map
-        if(settings.venue_map_embed) {
-            document.getElementById('mapContainer').innerHTML = `<iframe width="100%" height="250" style="border:0; border-radius:15px;" loading="lazy" allowfullscreen src="${settings.venue_map_embed}"></iframe><p class="card" style="margin-top:10px;">📍 ${settings.venue_name || "Venue"}</p>`;
-        }
-        
-        // WhatsApp
-        if(settings.wa_number) {
-            const waNumber = settings.wa_number.replace(/\D/g, '');
-            document.getElementById('waContainer').querySelector('p').innerText = `📞 +${waNumber}`;
-            document.getElementById('waLink').href = `https://wa.me/${waNumber}?text=Halo%20WO%2C%20saya%20butuh%20info%20wedding`;
-        }
-        
-        // Rekening
-        if(settings.bank_name && settings.bank_account) {
-            const rekText = `${settings.bank_name} - ${settings.bank_account} a.n. ${settings.bank_owner || "Pasangan Bahagia"}`;
-            document.getElementById('rekeningBox').innerHTML = `<span>🏦 ${rekText}</span><button class="btn" id="copyRekBtn" style="padding: 8px 20px; margin-top:0;">Salin Rekening</button>`;
-            document.getElementById('copyRekBtn').addEventListener('click', () => {
-                navigator.clipboard.writeText(rekText);
-                alert("Nomor rekening berhasil disalin! 💝");
-            });
-        }
-    }
-    
-    function renderGallery() {
-    const container = document.getElementById('galleryContainer');
-    if(!container) {
-        console.error("Element galleryContainer tidak ditemukan!");
-        return;
-    }
-    
-    if(!gallery || gallery.length === 0) {
-        container.innerHTML = '<p>Belum ada gambar galeri. Tambahkan di Sheet "Galeri"!</p>';
-        return;
-    }
-    
-    let html = "";
-    gallery.forEach(img => {
-        const imgUrl = img.url || "";
-        const caption = img.caption || "Galeri";
-        html += `
-            <div class="gallery-item">
-                <img class="gallery-img" src="${imgUrl}" alt="${caption}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Gambar+Gagal+Load'">
-                <p>${caption}</p>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-    console.log("Galeri berhasil di-render, jumlah gambar:", gallery.length);
-}
-    
-    // Countdown
-    let targetDate = new Date(2026, 06, 27, 16, 0, 0);
-    function updateCountdown() {
-        const now = new Date();
-        const diff = targetDate - now;
-        if(diff < 0) { document.getElementById('timer').innerHTML = "<div class='time'>Acara telah berlangsung</div>"; return; }
-        const days = Math.floor(diff / (1000*60*60*24));
-        const hours = Math.floor((diff % (86400000)) / 3600000);
-        const minutes = Math.floor((diff % 3600000) / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
-        document.getElementById('days').innerText = days;
-        document.getElementById('hours').innerText = hours;
-        document.getElementById('minutes').innerText = minutes;
-        document.getElementById('seconds').innerText = seconds;
-    }
-    setInterval(updateCountdown, 1000);
-    
-    // RSVP Form
-    const form = document.getElementById('rsvpForm');
-    const notif = document.getElementById('notifMsg');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        notif.innerHTML = "Mengirim...";
-        const params = new URLSearchParams();
-        params.append("nama", document.getElementById('nama').value);
-        params.append("jumlah", document.getElementById('jumlah').value);
-        params.append("kehadiran", document.getElementById('kehadiran').value);
-        params.append("pesan", document.getElementById('pesan').value);
-        params.append("menu", document.getElementById('menu').value);
-        params.append("wishMessage", document.getElementById('wishMessage').value);
-        params.append("captcha", document.getElementById('captcha').value);
-        try {
-            const resp = await fetch(GAS_URL, { method: "POST", body: params });
-            const hasil = await resp.json();
-            if(hasil.status === "sukses") {
-                notif.innerHTML = "✅ Konfirmasi terkirim! Terima kasih.";
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerHTML = "Mengirim...";
+            
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                btn.disabled = false;
+                btn.innerHTML = "KIRIM JADWAL KONSULTASI";
+                msg.classList.remove('hidden');
+                msg.innerHTML = "Terima kasih! Kami akan segera menghubungi kamu via WA.";
+                msg.classList.add('text-green-600');
                 form.reset();
-                loadWishMessages();
-            } else if(hasil.status === "captcha_error") {
-                notif.innerHTML = "❌ " + hasil.pesan;
-            } else throw new Error();
-        } catch(err) { notif.innerHTML = "❌ Gagal kirim. Coba ulang ya."; }
-    });
-    
-    // Guest Book
-    async function loadWishMessages() {
-        try {
-            const resp = await fetch(GAS_URL + "?getWishes=true");
-            const wishes = await resp.json();
-            const container = document.getElementById('wishList');
-            if(wishes.length === 0) {
-                container.innerHTML = "<p>Belum ada ucapan. Jadi yang pertama! 💫</p>";
-                return;
-            }
-            let html = "";
-            wishes.forEach(w => {
-                html += `<div class="wish-item"><span class="wish-name">${w.nama}</span> berkata:<br>“${w.wishMessage || "Doa terbaik untuk kalian 💕"}”</div>`;
+            })
+            .catch(error => {
+                btn.disabled = false;
+                btn.innerHTML = "KIRIM JADWAL KONSULTASI";
+                msg.classList.remove('hidden');
+                msg.innerHTML = "Oops, terjadi kesalahan. Coba lagi, Bre!";
+                msg.classList.add('text-red-600');
             });
-            container.innerHTML = html;
-        } catch(err) {
-            document.getElementById('wishList').innerHTML = "<p>Gagal memuat ucapan.</p>";
-        }
-    }
-    
-    // Admin Button (pake location.href biar ga diblokir HP)
-// Admin Button (perbaikan)
-document.getElementById('adminBtn').addEventListener('click', () => {
-    const pwd = prompt('Masukkan password admin:');
-    if(pwd) {
-        // Langsung pakai variabel GAS_URL yang sudah di-update
-        window.location.href = GAS_URL + '?password=' + pwd + '&referrer=' + encodeURIComponent(window.location.href);
-    }
-});
-    
-    loadData();
-    loadWishMessages();
-</script>
+        });
+    </script>
 </body>
 </html>
