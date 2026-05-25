@@ -23,9 +23,9 @@
             </div>
         </div>
     </nav>
-
+    
     <section class="h-screen flex items-center justify-center relative overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" class="absolute inset-0 w-full h-full object-cover brightness-50" alt="Wedding Background">
+        <img id="hero-bg" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" class="absolute inset-0 w-full h-full object-cover brightness-50" alt="Wedding Background">
         <div class="relative z-10 text-center text-white px-4 max-w-4xl">
             <h2 id="hero-title" class="text-4xl md:text-6xl mb-4 leading-tight">Loading judul impian...</h2>
             <p id="about-text" class="text-lg md:text-xl mb-8 font-light italic">Loading deskripsi...</p>
@@ -125,11 +125,17 @@
 
         // FUNGSI UNTUK MENGAMBIL DATA DARI GOOGLE SHEET KONTEN
        // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS)
-        function handleHomeContent(data) {
+       function handleHomeContent(data) {
             data.forEach(item => {
                 const element = document.getElementById(item.id);
                 if (element) {
-                    element.innerHTML = item.deskripsi;
+                    // Jika element yang ditembak adalah IMG, ganti src-nya
+                    if (element.tagName === 'IMG') {
+                        element.src = item.deskripsi;
+                    } else {
+                        // Jika text biasa (p, h2, dll) ganti innerHTML
+                        element.innerHTML = item.deskripsi;
+                    }
                 }
             });
         }
