@@ -1,106 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Kamar Admin - WO Pangkalan Bun</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - WO Pangkalan Bun</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f3ef;
+        }
+        .animate-spin-slow {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        textarea {
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        textarea:focus {
+            outline: none;
+            ring: 2px solid #d4af37;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-amber-800">Kamar Admin 🏠</h1>
-            <button onclick="refreshData()" class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<body class="antialiased">
+
+    <div class="max-w-5xl mx-auto px-4 py-8 md:py-12">
+        
+        <!-- HEADER -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 pb-4 border-b border-amber-200">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-stone-800 tracking-tight">
+                    🏠 Kamar Admin
+                </h1>
+                <p class="text-stone-500 text-sm mt-1">Kelola konten website Wedding Organizer</p>
+            </div>
+            <button onclick="refreshData()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-stone-300 rounded-xl text-stone-700 text-sm font-medium hover:bg-stone-50 hover:border-stone-400 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Refresh Data
+                Refresh
             </button>
         </div>
-        
-        <div id="editor-container" class="grid gap-6">
-            <div class="bg-amber-50 p-6 rounded-xl text-center">
-                <div class="animate-pulse flex flex-col items-center gap-3">
-                    <div class="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-amber-800 font-semibold">Sedang mengambil data dari Google Sheets...</p>
-                </div>
+
+        <!-- KONTEN DINAMIS -->
+        <div id="editor-container" class="space-y-6">
+            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
+                <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
+                <p class="text-stone-500 mt-3 text-sm">Memuat data konten...</p>
             </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="mt-8 pt-4 text-center text-stone-400 text-xs border-t border-stone-100">
+            Semua perubahan akan langsung tampil di halaman utama
         </div>
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
-        
         let currentData = [];
 
-        // FUNGSI REFRESH DATA
-        function refreshData() {
-            const container = document.getElementById('editor-container');
-            container.innerHTML = `
-                <div class="bg-amber-50 p-6 rounded-xl text-center">
-                    <div class="animate-pulse flex flex-col items-center gap-3">
-                        <div class="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-                        <p class="text-amber-800 font-semibold">Memuat ulang data...</p>
-                    </div>
-                </div>
-            `;
-            
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?callback=handleAdminContent`;
-            script.onerror = function() {
-                container.innerHTML = `
-                    <div class="bg-red-50 p-6 rounded-xl text-center border border-red-200">
-                        <p class="text-red-600 font-bold mb-2">⚠️ Gagal memuat data!</p>
-                        <p class="text-red-500 text-sm">Periksa koneksi internet atau coba refresh halaman.</p>
-                        <button onclick="refreshData()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Coba Lagi</button>
-                    </div>
-                `;
-            };
-            document.body.appendChild(script);
-        }
-
-        // FUNGSI UTAMA UNTUK MENERIMA DATA
-        function handleAdminContent(data) {
-            const container = document.getElementById('editor-container');
-            currentData = data || [];
-            
-            if (!currentData || currentData.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-yellow-50 p-6 rounded-xl text-center border border-yellow-200">
-                        <p class="text-yellow-700 font-semibold">📭 Data kosong!</p>
-                        <p class="text-yellow-600 text-sm mt-1">Pastikan sheet 'Konten' sudah diisi minimal 1 baris data.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = '';
-            
-            currentData.forEach(item => {
-                const idVal = item.id || item.ID || '';
-                const bagianVal = item.bagian || item.Bagian || '';
-                const descVal = item.deskripsi || item.Deskripsi || '';
-                
-                if (!idVal) return;
-                
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="font-bold text-gray-500 text-sm uppercase">${bagianVal || 'Konten'}</h3>
-                            <p class="text-xs text-gray-400 mt-1">ID: ${idVal}</p>
-                        </div>
-                        <div id="status-${idVal}" class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">Belum disimpan</div>
-                    </div>
-                    <textarea id="input-${idVal}" class="w-full border border-gray-300 p-3 rounded-lg mb-4 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" rows="3">${escapeHtml(descVal)}</textarea>
-                    <button onclick="updateData('${idVal}')" class="bg-amber-700 text-white px-5 py-2 rounded-lg text-sm hover:bg-amber-800 transition font-semibold">
-                        💾 Simpan Perubahan
-                    </button>
-                `;
-                container.appendChild(card);
-            });
-        }
-        
-        // Fungsi escape HTML biar aman
+        // Escape HTML
         function escapeHtml(text) {
             if (!text) return '';
             return text.replace(/[&<>]/g, function(m) {
@@ -111,17 +77,129 @@
             });
         }
 
-        // FUNGSI UPDATE DATA
-        async function updateData(id) {
-            const desc = document.getElementById('input-' + id).value;
-            const statusEl = document.getElementById('status-' + id);
-            const btn = event.target;
+        // Refresh data
+        function refreshData() {
+            const container = document.getElementById('editor-container');
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
+                    <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
+                    <p class="text-stone-500 mt-3 text-sm">Memuat ulang data...</p>
+                </div>
+            `;
             
-            // Update UI: loading
-            statusEl.innerHTML = "⏳ Menyimpan...";
-            statusEl.className = "text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700";
-            btn.disabled = true;
-            btn.innerHTML = "⏳ Menyimpan...";
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?callback=handleAdminContent`;
+            script.onerror = function() {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-red-200 shadow-sm p-8 text-center">
+                        <div class="text-red-500 text-3xl mb-3">⚠️</div>
+                        <p class="text-red-600 font-medium">Gagal memuat data</p>
+                        <p class="text-stone-500 text-sm mt-1">Periksa koneksi atau coba refresh</p>
+                        <button onclick="refreshData()" class="mt-4 px-4 py-2 bg-stone-100 rounded-lg text-sm hover:bg-stone-200 transition">Coba Lagi</button>
+                    </div>
+                `;
+            };
+            document.body.appendChild(script);
+        }
+
+        // Render konten
+        function handleAdminContent(data) {
+            const container = document.getElementById('editor-container');
+            currentData = data || [];
+            
+            if (!currentData.length) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-amber-100 shadow-sm p-8 text-center">
+                        <div class="text-amber-500 text-3xl mb-3">📭</div>
+                        <p class="text-amber-700 font-medium">Belum ada data konten</p>
+                        <p class="text-stone-500 text-sm mt-1">Isi sheet "Konten" terlebih dahulu</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Kelompokkan berdasarkan bagian
+            const grouped = {};
+            currentData.forEach(item => {
+                const bagian = item.bagian || item.Bagian || 'Lainnya';
+                if (!grouped[bagian]) grouped[bagian] = [];
+                grouped[bagian].push(item);
+            });
+
+            let html = '';
+            
+            for (const [bagian, items] of Object.entries(grouped)) {
+                html += `
+                    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 bg-stone-50 border-b border-stone-100">
+                            <h2 class="text-base font-semibold text-stone-700">
+                                📁 ${bagian}
+                            </h2>
+                            <p class="text-xs text-stone-400 mt-0.5">${items.length} konten</p>
+                        </div>
+                        <div class="divide-y divide-stone-100">
+                `;
+                
+                items.forEach(item => {
+                    const idVal = item.id || item.ID || '';
+                    const descVal = item.deskripsi || item.Deskripsi || '';
+                    
+                    if (!idVal) return;
+                    
+                    html += `
+                        <div class="p-5 hover:bg-stone-50/50 transition" data-id="${idVal}">
+                            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                                        <code class="text-xs font-mono bg-stone-100 px-2 py-0.5 rounded text-stone-600">${escapeHtml(idVal)}</code>
+                                        <span id="status-${idVal}" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Belum disimpan</span>
+                                    </div>
+                                    <textarea 
+                                        id="input-${idVal}" 
+                                        class="w-full border border-stone-200 rounded-xl p-3 text-stone-700 bg-white focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y"
+                                        rows="${descVal.length > 200 ? 4 : 3}"
+                                        placeholder="Ketik konten di sini..."
+                                    >${escapeHtml(descVal)}</textarea>
+                                </div>
+                                <div class="md:w-28 flex-shrink-0">
+                                    <button 
+                                        onclick="updateData('${idVal}')" 
+                                        class="w-full md:w-auto px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-xl transition shadow-sm">
+                                        💾 Simpan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Update data ke server
+        async function updateData(id) {
+            const textarea = document.getElementById('input-' + id);
+            if (!textarea) return;
+            
+            const desc = textarea.value;
+            const statusEl = document.getElementById('status-' + id);
+            const btn = event?.target || textarea.nextElementSibling?.querySelector('button');
+            
+            // Loading state
+            if (statusEl) {
+                statusEl.innerHTML = '⏳ Menyimpan...';
+                statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
+            }
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Menyimpan...';
+            }
             
             const formData = new FormData();
             formData.append('action', 'updateKonten');
@@ -133,34 +211,41 @@
                 const result = await response.text();
                 
                 if (result.includes('✅')) {
-                    statusEl.innerHTML = "✅ Tersimpan!";
-                    statusEl.className = "text-xs px-2 py-1 rounded-full bg-green-100 text-green-700";
+                    if (statusEl) {
+                        statusEl.innerHTML = '✓ Tersimpan';
+                        statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700';
+                    }
+                    // Reset status setelah 2.5 detik
                     setTimeout(() => {
                         if (statusEl) {
-                            statusEl.innerHTML = "Tersimpan";
-                            statusEl.className = "text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600";
+                            statusEl.innerHTML = 'Tersimpan';
+                            statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500';
                         }
-                    }, 3000);
+                    }, 2500);
                 } else {
                     throw new Error(result);
                 }
             } catch(err) {
-                statusEl.innerHTML = "❌ Gagal!";
-                statusEl.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700";
+                if (statusEl) {
+                    statusEl.innerHTML = '✗ Gagal';
+                    statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600';
+                }
                 setTimeout(() => {
                     if (statusEl) {
-                        statusEl.innerHTML = "Coba lagi";
-                        statusEl.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700";
+                        statusEl.innerHTML = 'Coba lagi';
+                        statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600';
                     }
-                }, 3000);
+                }, 2500);
                 console.error(err);
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = "💾 Simpan Perubahan";
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '💾 Simpan';
+                }
             }
         }
 
-        // LOAD DATA SAAT HALAMAN DIBUKA
+        // Init
         window.onload = function() {
             refreshData();
         };
