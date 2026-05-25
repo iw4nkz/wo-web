@@ -6,78 +6,164 @@
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8 text-amber-800">Kamar Admin 🏠</h1>
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-amber-800">Kamar Admin 🏠</h1>
+            <button onclick="refreshData()" class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh Data
+            </button>
+        </div>
         
         <div id="editor-container" class="grid gap-6">
-            <p id="loading-text" class="text-gray-500 font-semibold animate-pulse">Sedang mengambil data dari Google Sheets, tunggu sebentar Bre...</p>
+            <div class="bg-amber-50 p-6 rounded-xl text-center">
+                <div class="animate-pulse flex flex-col items-center gap-3">
+                    <div class="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-amber-800 font-semibold">Sedang mengambil data dari Google Sheets...</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // URL Apps Script kamu yang berakhiran /exec
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
+        
+        let currentData = [];
 
-        // 1. FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
+        // FUNGSI REFRESH DATA
+        function refreshData() {
+            const container = document.getElementById('editor-container');
+            container.innerHTML = `
+                <div class="bg-amber-50 p-6 rounded-xl text-center">
+                    <div class="animate-pulse flex flex-col items-center gap-3">
+                        <div class="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-amber-800 font-semibold">Memuat ulang data...</p>
+                    </div>
+                </div>
+            `;
+            
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?callback=handleAdminContent`;
+            script.onerror = function() {
+                container.innerHTML = `
+                    <div class="bg-red-50 p-6 rounded-xl text-center border border-red-200">
+                        <p class="text-red-600 font-bold mb-2">⚠️ Gagal memuat data!</p>
+                        <p class="text-red-500 text-sm">Periksa koneksi internet atau coba refresh halaman.</p>
+                        <button onclick="refreshData()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Coba Lagi</button>
+                    </div>
+                `;
+            };
+            document.body.appendChild(script);
+        }
+
+        // FUNGSI UTAMA UNTUK MENERIMA DATA
         function handleAdminContent(data) {
             const container = document.getElementById('editor-container');
-            container.innerHTML = '';
-
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p class="text-red-500">Data kosong, cek tab Konten di Sheets-mu Bre!</p>';
+            currentData = data || [];
+            
+            if (!currentData || currentData.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-yellow-50 p-6 rounded-xl text-center border border-yellow-200">
+                        <p class="text-yellow-700 font-semibold">📭 Data kosong!</p>
+                        <p class="text-yellow-600 text-sm mt-1">Pastikan sheet 'Konten' sudah diisi minimal 1 baris data.</p>
+                    </div>
+                `;
                 return;
             }
 
-            data.forEach(item => {
+            container.innerHTML = '';
+            
+            currentData.forEach(item => {
                 const idVal = item.id || item.ID || '';
                 const bagianVal = item.bagian || item.Bagian || '';
                 const descVal = item.deskripsi || item.Deskripsi || '';
-
+                
                 if (!idVal) return;
-
+                
                 const card = document.createElement('div');
                 card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
                 card.innerHTML = `
-                    <h3 class="font-bold text-gray-500 text-sm uppercase mb-2">${bagianVal} (${idVal})</h3>
-                    <textarea id="input-${idVal}" class="w-full border p-2 rounded mb-4" rows="3">${descVal}</textarea>
-                    <button onclick="updateData('${idVal}')" class="bg-amber-700 text-white px-4 py-2 rounded text-sm hover:bg-black transition">
-                        Simpan Perubahan
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-gray-500 text-sm uppercase">${bagianVal || 'Konten'}</h3>
+                            <p class="text-xs text-gray-400 mt-1">ID: ${idVal}</p>
+                        </div>
+                        <div id="status-${idVal}" class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">Belum disimpan</div>
+                    </div>
+                    <textarea id="input-${idVal}" class="w-full border border-gray-300 p-3 rounded-lg mb-4 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none" rows="3">${escapeHtml(descVal)}</textarea>
+                    <button onclick="updateData('${idVal}')" class="bg-amber-700 text-white px-5 py-2 rounded-lg text-sm hover:bg-amber-800 transition font-semibold">
+                        💾 Simpan Perubahan
                     </button>
                 `;
                 container.appendChild(card);
             });
         }
+        
+        // Fungsi escape HTML biar aman
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
 
-        // 2. TRIGGER PEMANGGILAN DATA SAAT HALAMAN DI-LOAD
-        window.onload = function() {
-            const script = document.createElement('script');
-            // Menambahkan parameter ?callback=handleAdminContent agar Google merespon dengan format JSONP
-            script.src = `${scriptURL}?callback=handleAdminContent`;
-            
-            // Jika dalam 8 detik gagal load (misal URL salah/belum dideploy), munculkan pesan error
-            script.onerror = function() {
-                document.getElementById('editor-container').innerHTML = `
-                    <div class="bg-red-50 p-4 rounded-xl text-red-700">
-                        <p class="font-bold">Waduh, Jaringan Mogok atau URL Salah! 💥</p>
-                        <p class="text-xs mt-2">Tips: Pastikan Apps Script sudah dideploy sebagai 'New Version' dengan akses 'Anyone'.</p>
-                    </div>
-                `;
-            };
-            
-            document.body.appendChild(script);
-        };
-
-        // 3. FUNGSI UPDATE DATA (Gunakan POST seperti biasa)
-        function updateData(id) {
+        // FUNGSI UPDATE DATA
+        async function updateData(id) {
             const desc = document.getElementById('input-' + id).value;
+            const statusEl = document.getElementById('status-' + id);
+            const btn = event.target;
+            
+            // Update UI: loading
+            statusEl.innerHTML = "⏳ Menyimpan...";
+            statusEl.className = "text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700";
+            btn.disabled = true;
+            btn.innerHTML = "⏳ Menyimpan...";
+            
             const formData = new FormData();
             formData.append('action', 'updateKonten');
             formData.append('id', id);
             formData.append('deskripsi', desc);
-
-            fetch(scriptURL, { method: 'POST', body: formData })
-            .then(res => alert('Mantap Bre, data ' + id + ' sudah terupdate!'))
-            .catch(err => alert('Waduh gagal nyimpen, cek koneksi Bre!'));
+            
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: formData });
+                const result = await response.text();
+                
+                if (result.includes('✅')) {
+                    statusEl.innerHTML = "✅ Tersimpan!";
+                    statusEl.className = "text-xs px-2 py-1 rounded-full bg-green-100 text-green-700";
+                    setTimeout(() => {
+                        if (statusEl) {
+                            statusEl.innerHTML = "Tersimpan";
+                            statusEl.className = "text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600";
+                        }
+                    }, 3000);
+                } else {
+                    throw new Error(result);
+                }
+            } catch(err) {
+                statusEl.innerHTML = "❌ Gagal!";
+                statusEl.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700";
+                setTimeout(() => {
+                    if (statusEl) {
+                        statusEl.innerHTML = "Coba lagi";
+                        statusEl.className = "text-xs px-2 py-1 rounded-full bg-red-100 text-red-700";
+                    }
+                }, 3000);
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "💾 Simpan Perubahan";
+            }
         }
+
+        // LOAD DATA SAAT HALAMAN DIBUKA
+        window.onload = function() {
+            refreshData();
+        };
     </script>
 </body>
 </html>

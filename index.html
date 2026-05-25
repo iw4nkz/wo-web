@@ -126,55 +126,89 @@
     </section>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
-        const form = document.getElementById('weddingForm');
-        const btn = document.getElementById('submitBtn');
-        const msg = document.getElementById('responseMsg');
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
+    const form = document.getElementById('weddingForm');
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('responseMsg');
 
-        // Form Submit handler
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            btn.disabled = true;
-            btn.innerHTML = "Mengirim...";
+    // Tampilkan loading indicator di awal
+    function showLoadingIndicator() {
+        const heroTitle = document.getElementById('hero-title');
+        const aboutText = document.getElementById('about-text');
+        if (heroTitle) heroTitle.innerHTML = '<div class="animate-pulse">Memuat...</div>';
+        if (aboutText) aboutText.innerHTML = '<div class="animate-pulse">Sedang mengambil data...</div>';
+    }
+    
+    showLoadingIndicator();
+
+    // Form Submit handler
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.innerHTML = "⏳ Mengirim...";
+        msg.classList.add('hidden');
+        
+        try {
+            const response = await fetch(scriptURL, { method: 'POST', body: new FormData(form) });
+            const result = await response.text();
             
-            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-            .then(response => {
-                btn.disabled = false;
-                btn.innerHTML = "KIRIM JADWAL KONSULTASI";
-                msg.classList.remove('hidden');
-                msg.innerHTML = "Terima kasih! Kami akan segera menghubungi kamu via WA.";
-                msg.classList.add('text-green-600');
-                form.reset();
-            })
-            .catch(error => {
-                btn.disabled = false;
-                btn.innerHTML = "KIRIM JADWAL KONSULTASI";
-                msg.classList.remove('hidden');
-                msg.innerHTML = "Oops, terjadi kesalahan. Coba lagi, Bre!";
-                msg.classList.add('text-red-600');
-            });
-        });
-
-        // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
-        function handleHomeContent(data) {
-            data.forEach(item => {
-                const element = document.getElementById(item.id);
-                if (element) {
-                    if (element.tagName === 'IMG') {
-                        element.src = item.deskripsi;
-                    } else {
-                        element.innerHTML = item.deskripsi;
-                    }
-                }
-            });
+            btn.disabled = false;
+            btn.innerHTML = "KIRIM JADWAL KONSULTASI";
+            msg.classList.remove('hidden');
+            msg.innerHTML = "✅ " + (result.includes('✅') ? result : "Terima kasih! Kami akan segera menghubungi Anda.");
+            msg.className = "mt-4 text-center font-semibold text-green-600 bg-green-50 p-3 rounded-lg";
+            form.reset();
+            
+            // Hilangkan pesan setelah 5 detik
+            setTimeout(() => {
+                msg.classList.add('hidden');
+            }, 5000);
+        } catch(error) {
+            btn.disabled = false;
+            btn.innerHTML = "KIRIM JADWAL KONSULTASI";
+            msg.classList.remove('hidden');
+            msg.innerHTML = "❌ Gagal mengirim. Coba lagi, Bre!";
+            msg.className = "mt-4 text-center font-semibold text-red-600 bg-red-50 p-3 rounded-lg";
+            console.error(error);
         }
+    });
 
-        // Panggil data dari Google Sheet via JSONP script injection
-        window.addEventListener('DOMContentLoaded', () => {
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?callback=handleHomeContent`;
-            document.body.appendChild(script);
+    // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
+    function handleHomeContent(data) {
+        if (!data || data.length === 0) {
+            console.warn("Data kosong dari server");
+            return;
+        }
+        
+        data.forEach(item => {
+            const element = document.getElementById(item.id);
+            if (element) {
+                if (element.tagName === 'IMG') {
+                    element.src = item.deskripsi || '';
+                    // Tambahkan fallback image kalau URL kosong
+                    if (!item.deskripsi) {
+                        element.src = 'https://via.placeholder.com/400x300?text=Gambar+Coming+Soon';
+                    }
+                } else {
+                    element.innerHTML = item.deskripsi || '-';
+                }
+            }
         });
-    </script>
+    }
+
+    // Panggil data dari Google Sheet via JSONP script injection
+    window.addEventListener('DOMContentLoaded', () => {
+        const script = document.createElement('script');
+        script.src = `${scriptURL}?callback=handleHomeContent`;
+        script.onerror = function() {
+            console.error("Gagal memuat data dari server");
+            const heroTitle = document.getElementById('hero-title');
+            const aboutText = document.getElementById('about-text');
+            if (heroTitle) heroTitle.innerHTML = "Wedding Organizer Pangkalan Bun";
+            if (aboutText) aboutText.innerHTML = "Mewujudkan pernikahan impian Anda dengan pelayanan terbaik.";
+        };
+        document.body.appendChild(script);
+    });
+</script>
 </body>
 </html>
