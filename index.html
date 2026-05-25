@@ -126,14 +126,18 @@
         // FUNGSI UNTUK MENGAMBIL DATA DARI GOOGLE SHEET KONTEN
         async function loadContent() {
             try {
-                const response = await fetch(scriptURL);
+                const response = await fetch(scriptURL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                });
                 const data = await response.json();
                 
                 data.forEach(item => {
-                    // Mencari elemen HTML berdasarkan ID (hero-title, about-text, paket-silver)
                     const element = document.getElementById(item.id);
                     if (element) {
-                        // Masukkan teks dari kolom 'deskripsi' di sheet ke dalam elemen HTML
                         element.innerHTML = item.deskripsi;
                     }
                 });
