@@ -261,6 +261,14 @@ function renderPesanList(messages) {
         let waNumber = '';
         if (waRaw) {
             waNumber = String(waRaw).replace(/[^0-9]/g, '');
+            // FIX: Jika nomor dimulai dengan 0, ganti 0 jadi 62
+             if (waNumber.startsWith('0')) {
+                  waNumber = '62' + waNumber.substring(1);
+    }
+             // FIX: Jika nomor dimulai dengan 8 (tanpa 0), tambah 62 di depan
+             else if (waNumber.startsWith('8') && waNumber.length >= 10) {
+                waNumber = '62' + waNumber;
+             }
         }
         let waDisplay = waNumber ? waNumber : (waRaw || '-');
         
@@ -333,9 +341,12 @@ function refreshMessages() {
 }
 
 // Fungsi hapus pesan (panggil backend)
-function hapusPesan(elementId, index) {
+function hapusPesan(index) {
     const msg = window.allMessages?.[index];
-    if (!msg) return;
+    if (!msg) {
+        console.error("Pesan tidak ditemukan, index:", index);
+        return;
+    }
     
     Swal.fire({
         title: 'Hapus pesan?',
@@ -348,7 +359,14 @@ function hapusPesan(elementId, index) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Kirim request hapus ke backend
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Menghapus...',
+                text: 'Mohon tunggu',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            
             const formData = new FormData();
             formData.append('action', 'hapusPesan');
             formData.append('timestamp', msg.waktu);
@@ -357,6 +375,7 @@ function hapusPesan(elementId, index) {
             fetch(scriptURL, { method: 'POST', body: formData })
                 .then(res => res.text())
                 .then(result => {
+                    console.log("Response hapus:", result);
                     if (result.includes('✅')) {
                         Swal.fire('Terhapus!', 'Pesan berhasil dihapus.', 'success');
                         refreshMessages();
@@ -365,8 +384,8 @@ function hapusPesan(elementId, index) {
                     }
                 })
                 .catch(err => {
-                    Swal.fire('Error!', 'Gagal menghapus pesan.', 'error');
-                    console.error(err);
+                    console.error("Error hapus pesan:", err);
+                    Swal.fire('Error!', 'Gagal menghapus pesan: ' + err.message, 'error');
                 });
         }
     });
