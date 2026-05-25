@@ -17,9 +17,16 @@
         // PASTIKAN URL INI SUDAH SESUAI DENGAN WEB APP APPS SCRIPT-MU
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
 
-        async function loadAdminData() {
+       async function loadAdminData() {
             try {
-                const response = await fetch(scriptURL);
+                // SOLUSI CORS: Kita panggil URL tanpa custom header bawaan browser
+                const response = await fetch(scriptURL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'text/plain' // Menggunakan text/plain ampuh bypass CORS Google
+                    }
+                });
                 const data = await response.json();
                 const container = document.getElementById('editor-container');
                 container.innerHTML = '';
@@ -30,12 +37,11 @@
                 }
 
                 data.forEach(item => {
-                    // Trik aman: deteksi kolom baik huruf besar maupun kecil
                     const idVal = item.id || item.ID || '';
                     const bagianVal = item.bagian || item.Bagian || '';
                     const descVal = item.deskripsi || item.Deskripsi || '';
 
-                    if (!idVal) return; // Lewati jika ID kosong
+                    if (!idVal) return;
 
                     const card = document.createElement('div');
                     card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
@@ -53,7 +59,7 @@
                     <div class="bg-red-50 p-4 rounded-xl text-red-700">
                         <p class="font-bold">Waduh, Gagal Manggil Data! 💥</p>
                         <p class="text-sm mt-1">Error: ${error.message}</p>
-                        <p class="text-xs mt-2 bg-red-100 p-2 rounded">Tips: Pastikan Apps Script sudah di-deploy sebagai "Anyone" (Siapa saja) dan URL-nya sudah benar.</p>
+                        <p class="text-xs mt-2 bg-red-100 p-2 rounded">Tips: Pastikan pas Deploy Apps Script, bagian 'Who has access' sudah diganti ke 'Anyone'.</p>
                     </div>
                 `;
             }
