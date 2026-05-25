@@ -29,9 +29,41 @@
     <section class="h-screen flex items-center justify-center relative overflow-hidden">
         <img id="hero-bg" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" class="absolute inset-0 w-full h-full object-cover brightness-50" alt="Wedding Background">
         <div class="relative z-10 text-center text-white px-4 max-w-4xl">
-            <h2 id="hero-title" class="text-4xl md:text-6xl mb-4 leading-tight">Loading judul impian...</h2>
-            <p id="about-text" class="text-lg md:text-xl mb-8 font-light italic">Loading deskripsi...</p>
-            <a href="#booking" class="border-2 border-white px-10 py-3 rounded-full hover:bg-white hover:text-amber-900 transition-all font-semibold">Konsultasi Sekarang</a>
+        <span id="cita-rias" class="text-amber-400 font-semibold tracking-widest uppercase block mb-2">Loading...</span>
+        <h2 id="hero-title" class="text-4xl md:text-6xl mb-4 leading-tight">Loading...</h2>
+        <p id="about-text" class="text-lg md:text-xl mb-8 font-light italic">Loading...</p>
+    </div>
+
+    <section id="galeri" class="py-20 bg-white px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <h3 class="text-3xl font-bold mb-12 text-amber-900">Dokumentasi Event</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="overflow-hidden rounded-xl h-64 shadow-sm group">
+                    <img id="gallery-img1" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Dekorasi">
+                </div>
+                <div class="overflow-hidden rounded-xl h-64 shadow-sm group">
+                    <img id="gallery-img2" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Riasan">
+                </div>
+                <div class="overflow-hidden rounded-xl h-64 shadow-sm group">
+                    <img id="gallery-img3" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Pelaminan">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimoni" class="py-20 bg-amber-50/30 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <h3 class="text-3xl font-bold mb-12 text-amber-900">Apa Kata Mereka?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-amber-100/50 text-left">
+                    <p id="testi-text1" class="text-slate-600 italic mb-4">Loading...</p>
+                    <h5 id="testi-nama1" class="font-bold text-amber-900">Loading...</h5>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-amber-100/50 text-left">
+                    <p id="testi-text2" class="text-slate-600 italic mb-4">Loading...</p>
+                    <h5 id="testi-nama2" class="font-bold text-amber-900">Loading...</h5>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -169,11 +201,10 @@
             data.forEach(item => {
                 const element = document.getElementById(item.id);
                 if (element) {
-                    // Jika element yang ditembak adalah IMG, ganti src-nya
+                    // Jika element berbentuk IMG, ganti SRC-nya. Jika bukan, ganti teksnya.
                     if (element.tagName === 'IMG') {
                         element.src = item.deskripsi;
                     } else {
-                        // Jika text biasa (p, h2, dll) ganti innerHTML
                         element.innerHTML = item.deskripsi;
                     }
                 }
