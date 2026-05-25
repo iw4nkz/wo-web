@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kamar Admin - WO Pangkalan Bun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-amber-800">Kamar Admin 🏠</h1>
+        
+        <div id="editor-container" class="grid gap-6">
+            <!-- Form Edit akan muncul otomatis di sini -->
+            <p>Loading data konten...</p>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
+
+        async function loadAdminData() {
+            const response = await fetch(scriptURL);
+            const data = await response.json();
+            const container = document.getElementById('editor-container');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
+                card.innerHTML = `
+                    <h3 class="font-bold text-gray-500 text-sm uppercase mb-2">${item.bagian} (${item.id})</h3>
+                    <textarea id="input-${item.id}" class="w-full border p-2 rounded mb-4">${item.deskripsi}</textarea>
+                    <button onclick="updateData('${item.id}')" class="bg-amber-700 text-white px-4 py-2 rounded text-sm hover:bg-black transition">
+                        Simpan Perubahan
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateData(id) {
+            const desc = document.getElementById('input-' + id).value;
+            const formData = new FormData();
+            formData.append('action', 'updateKonten');
+            formData.append('id', id);
+            formData.append('deskripsi', desc);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => alert('Mantap Bre, sudah terupdate!'))
+            .catch(err => alert('Waduh gagal, cek koneksi Bre!'));
+        }
+
+        window.onload = loadAdminData;
+    </script>
+</body>
+</html>
