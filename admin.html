@@ -14,57 +14,59 @@
     </div>
 
     <script>
-        // PASTIKAN URL INI SUDAH SESUAI DENGAN WEB APP APPS SCRIPT-MU
+        // URL Apps Script kamu yang berakhiran /exec
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
 
-       async function loadAdminData() {
-            try {
-                // SOLUSI CORS: Kita panggil URL tanpa custom header bawaan browser
-                const response = await fetch(scriptURL, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'text/plain' // Menggunakan text/plain ampuh bypass CORS Google
-                    }
-                });
-                const data = await response.json();
-                const container = document.getElementById('editor-container');
-                container.innerHTML = '';
+        // 1. FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
+        function handleAdminContent(data) {
+            const container = document.getElementById('editor-container');
+            container.innerHTML = '';
 
-                if (data.length === 0) {
-                    container.innerHTML = '<p class="text-red-500">Data kosong, cek tab Konten di Sheets-mu Bre!</p>';
-                    return;
-                }
-
-                data.forEach(item => {
-                    const idVal = item.id || item.ID || '';
-                    const bagianVal = item.bagian || item.Bagian || '';
-                    const descVal = item.deskripsi || item.Deskripsi || '';
-
-                    if (!idVal) return;
-
-                    const card = document.createElement('div');
-                    card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
-                    card.innerHTML = `
-                        <h3 class="font-bold text-gray-500 text-sm uppercase mb-2">${bagianVal} (${idVal})</h3>
-                        <textarea id="input-${idVal}" class="w-full border p-2 rounded mb-4" rows="3">${descVal}</textarea>
-                        <button onclick="updateData('${idVal}')" class="bg-amber-700 text-white px-4 py-2 rounded text-sm hover:bg-black transition">
-                            Simpan Perubahan
-                        </button>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch (error) {
-                document.getElementById('editor-container').innerHTML = `
-                    <div class="bg-red-50 p-4 rounded-xl text-red-700">
-                        <p class="font-bold">Waduh, Gagal Manggil Data! 💥</p>
-                        <p class="text-sm mt-1">Error: ${error.message}</p>
-                        <p class="text-xs mt-2 bg-red-100 p-2 rounded">Tips: Pastikan pas Deploy Apps Script, bagian 'Who has access' sudah diganti ke 'Anyone'.</p>
-                    </div>
-                `;
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p class="text-red-500">Data kosong, cek tab Konten di Sheets-mu Bre!</p>';
+                return;
             }
+
+            data.forEach(item => {
+                const idVal = item.id || item.ID || '';
+                const bagianVal = item.bagian || item.Bagian || '';
+                const descVal = item.deskripsi || item.Deskripsi || '';
+
+                if (!idVal) return;
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
+                card.innerHTML = `
+                    <h3 class="font-bold text-gray-500 text-sm uppercase mb-2">${bagianVal} (${idVal})</h3>
+                    <textarea id="input-${idVal}" class="w-full border p-2 rounded mb-4" rows="3">${descVal}</textarea>
+                    <button onclick="updateData('${idVal}')" class="bg-amber-700 text-white px-4 py-2 rounded text-sm hover:bg-black transition">
+                        Simpan Perubahan
+                    </button>
+                `;
+                container.appendChild(card);
+            });
         }
 
+        // 2. TRIGGER PEMANGGILAN DATA SAAT HALAMAN DI-LOAD
+        window.onload = function() {
+            const script = document.createElement('script');
+            // Menambahkan parameter ?callback=handleAdminContent agar Google merespon dengan format JSONP
+            script.src = `${scriptURL}?callback=handleAdminContent`;
+            
+            // Jika dalam 8 detik gagal load (misal URL salah/belum dideploy), munculkan pesan error
+            script.onerror = function() {
+                document.getElementById('editor-container').innerHTML = `
+                    <div class="bg-red-50 p-4 rounded-xl text-red-700">
+                        <p class="font-bold">Waduh, Jaringan Mogok atau URL Salah! 💥</p>
+                        <p class="text-xs mt-2">Tips: Pastikan Apps Script sudah dideploy sebagai 'New Version' dengan akses 'Anyone'.</p>
+                    </div>
+                `;
+            };
+            
+            document.body.appendChild(script);
+        };
+
+        // 3. FUNGSI UPDATE DATA (Gunakan POST seperti biasa)
         function updateData(id) {
             const desc = document.getElementById('input-' + id).value;
             const formData = new FormData();
@@ -76,8 +78,6 @@
             .then(res => alert('Mantap Bre, data ' + id + ' sudah terupdate!'))
             .catch(err => alert('Waduh gagal nyimpen, cek koneksi Bre!'));
         }
-
-        window.onload = loadAdminData;
     </script>
 </body>
 </html>
