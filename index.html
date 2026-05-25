@@ -58,22 +58,34 @@
     </section>
 
     <section id="galeri" class="py-20 bg-white px-4">
-        <div class="max-w-6xl mx-auto text-center">
-            <h3 class="text-3xl font-bold mb-4 text-amber-900">Dokumentasi Event</h3>
-            <p class="text-slate-500 mb-12 max-w-md mx-auto">Beberapa momen kebahagiaan dari pengantin yang telah mempercayakan hari bahagianya kepada kami.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="overflow-hidden rounded-xl h-64 shadow-sm group">
-                    <img id="gallery-img1" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Dekorasi">
+    <div class="max-w-6xl mx-auto text-center">
+        <h3 class="text-3xl font-bold mb-4 text-amber-900">Dokumentasi Event</h3>
+        <p class="text-slate-500 mb-8 max-w-md mx-auto">Momen kebahagiaan dari pengantin yang telah mempercayakan hari bahagianya kepada kami.</p>
+        
+        <!-- SLIDESHOW CONTAINER -->
+        <div class="relative max-w-4xl mx-auto overflow-hidden rounded-2xl shadow-xl">
+            <div id="slideshowContainer" class="relative h-80 md:h-96">
+                <div id="slideshowTrack" class="flex transition-transform duration-500 ease-out h-full">
+                    <!-- Slides akan diisi JavaScript -->
                 </div>
-                <div class="overflow-hidden rounded-xl h-64 shadow-sm group">
-                    <img id="gallery-img2" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Riasan">
-                </div>
-                <div class="overflow-hidden rounded-xl h-64 shadow-sm group">
-                    <img id="gallery-img3" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Pelaminan">
-                </div>
+                
+                <!-- Tombol navigasi -->
+                <button id="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button id="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+                
+                <!-- Indikator dot -->
+                <div id="slideDots" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2"></div>
             </div>
+            
+            <!-- Caption gambar -->
+            <div id="slideCaption" class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-center py-2 text-sm"></div>
         </div>
-    </section>
+    </div>
+</section>
 
     <section id="testimoni" class="py-20 bg-amber-50/30 px-4">
         <div class="max-w-6xl mx-auto text-center">
@@ -138,10 +150,9 @@
         if (heroTitle) heroTitle.innerHTML = '<div class="animate-pulse">Memuat...</div>';
         if (aboutText) aboutText.innerHTML = '<div class="animate-pulse">Sedang mengambil data...</div>';
     }
-    
     showLoadingIndicator();
 
-    // Form Submit handler
+    // ========== FORM SUBMIT ==========
     form.addEventListener('submit', async e => {
         e.preventDefault();
         btn.disabled = true;
@@ -159,10 +170,7 @@
             msg.className = "mt-4 text-center font-semibold text-green-600 bg-green-50 p-3 rounded-lg";
             form.reset();
             
-            // Hilangkan pesan setelah 5 detik
-            setTimeout(() => {
-                msg.classList.add('hidden');
-            }, 5000);
+            setTimeout(() => { msg.classList.add('hidden'); }, 5000);
         } catch(error) {
             btn.disabled = false;
             btn.innerHTML = "KIRIM JADWAL KONSULTASI";
@@ -173,10 +181,10 @@
         }
     });
 
-    // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
+    // ========== KONTEN UTAMA (Hero, Paket, Testimoni) ==========
     function handleHomeContent(data) {
         if (!data || data.length === 0) {
-            console.warn("Data kosong dari server");
+            console.warn("Data konten kosong dari server");
             return;
         }
         
@@ -185,7 +193,6 @@
             if (element) {
                 if (element.tagName === 'IMG') {
                     element.src = item.deskripsi || '';
-                    // Tambahkan fallback image kalau URL kosong
                     if (!item.deskripsi) {
                         element.src = 'https://via.placeholder.com/400x300?text=Gambar+Coming+Soon';
                     }
@@ -196,18 +203,132 @@
         });
     }
 
-    // Panggil data dari Google Sheet via JSONP script injection
-    window.addEventListener('DOMContentLoaded', () => {
+    // ========== SLIDESHOW GALERI DINAMIS ==========
+    let galleryData = [];
+    let currentSlide = 0;
+    let slideInterval;
+    let slideshowTrack;
+    let slideshowDots;
+    let slideCaption;
+    let prevBtn;
+    let nextBtn;
+    
+    function initSlideshow() {
+        slideshowTrack = document.getElementById('slideshowTrack');
+        slideshowDots = document.getElementById('slideDots');
+        slideCaption = document.getElementById('slideCaption');
+        prevBtn = document.getElementById('prevSlide');
+        nextBtn = document.getElementById('nextSlide');
+        
+        if (!slideshowTrack) return;
+        
         const script = document.createElement('script');
-        script.src = `${scriptURL}?callback=handleHomeContent`;
-        script.onerror = function() {
-            console.error("Gagal memuat data dari server");
+        script.src = `${scriptURL}?getGallery=true&callback=handleGalleryData`;
+        document.body.appendChild(script);
+    }
+    
+    function handleGalleryData(data) {
+        galleryData = data || [];
+        
+        if (!galleryData.length) {
+            if (slideshowTrack) slideshowTrack.innerHTML = '<div class="w-full h-full flex items-center justify-center text-stone-400">Belum ada gambar galeri</div>';
+            return;
+        }
+        
+        // Render slides
+        slideshowTrack.innerHTML = '';
+        galleryData.forEach((img) => {
+            const slide = document.createElement('div');
+            slide.className = 'w-full h-full flex-shrink-0 relative';
+            slide.innerHTML = `<img src="${img.url}" alt="${img.caption || 'Galeri'}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x500?text=Gambar+Gagal+Load'">`;
+            slideshowTrack.appendChild(slide);
+        });
+        
+        // Render dots
+        slideshowDots.innerHTML = '';
+        galleryData.forEach((_, idx) => {
+            const dot = document.createElement('button');
+            dot.className = `w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-amber-400 w-4' : 'bg-white/60 hover:bg-white/80'}`;
+            dot.onclick = () => goToSlide(idx);
+            slideshowDots.appendChild(dot);
+        });
+        
+        // Set caption awal
+        if (galleryData[0] && slideCaption) {
+            slideCaption.innerHTML = galleryData[0].caption || '';
+        }
+        
+        // Event listeners tombol
+        if (prevBtn) prevBtn.onclick = () => changeSlide(-1);
+        if (nextBtn) nextBtn.onclick = () => changeSlide(1);
+        
+        // Mulai slideshow otomatis
+        startAutoSlide();
+    }
+    
+    function changeSlide(direction) {
+        if (!galleryData.length) return;
+        currentSlide = (currentSlide + direction + galleryData.length) % galleryData.length;
+        updateSlidePosition();
+        resetAutoSlide();
+    }
+    
+    function goToSlide(index) {
+        if (!galleryData.length) return;
+        currentSlide = Math.min(Math.max(0, index), galleryData.length - 1);
+        updateSlidePosition();
+        resetAutoSlide();
+    }
+    
+    function updateSlidePosition() {
+        if (!slideshowTrack) return;
+        slideshowTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        if (slideshowDots) {
+            const dots = slideshowDots.children;
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].className = i === currentSlide ? 'w-4 h-2 rounded-full bg-amber-400 transition-all' : 'w-2 h-2 rounded-full bg-white/60 hover:bg-white/80 transition-all';
+            }
+        }
+        
+        if (slideCaption && galleryData[currentSlide]) {
+            slideCaption.innerHTML = galleryData[currentSlide].caption || '';
+        }
+    }
+    
+    function startAutoSlide() {
+        if (slideInterval) clearInterval(slideInterval);
+        slideInterval = setInterval(() => {
+            if (galleryData.length) {
+                currentSlide = (currentSlide + 1) % galleryData.length;
+                updateSlidePosition();
+            }
+        }, 4000);
+    }
+    
+    function resetAutoSlide() {
+        if (slideInterval) {
+            clearInterval(slideInterval);
+            startAutoSlide();
+        }
+    }
+
+    // ========== LOAD SEMUA DATA SAAT HALAMAN DIBUKA ==========
+    window.addEventListener('DOMContentLoaded', () => {
+        // Load konten utama
+        const scriptKonten = document.createElement('script');
+        scriptKonten.src = `${scriptURL}?callback=handleHomeContent`;
+        scriptKonten.onerror = function() {
+            console.error("Gagal memuat data konten");
             const heroTitle = document.getElementById('hero-title');
             const aboutText = document.getElementById('about-text');
             if (heroTitle) heroTitle.innerHTML = "Wedding Organizer Pangkalan Bun";
             if (aboutText) aboutText.innerHTML = "Mewujudkan pernikahan impian Anda dengan pelayanan terbaik.";
         };
-        document.body.appendChild(script);
+        document.body.appendChild(scriptKonten);
+        
+        // Load slideshow galeri
+        initSlideshow();
     });
 </script>
 </body>

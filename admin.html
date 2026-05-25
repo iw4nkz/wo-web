@@ -7,248 +7,265 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f5f3ef;
-        }
-        .animate-spin-slow {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        textarea {
-            font-size: 0.875rem;
-            line-height: 1.5;
-        }
-        textarea:focus {
-            outline: none;
-            ring: 2px solid #d4af37;
-        }
+        body { font-family: 'Inter', sans-serif; background: #f5f3ef; }
+        .tab-active { border-bottom: 2px solid #d4af37; color: #78350f; }
+        .animate-spin-slow { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        textarea:focus { outline: none; ring: 2px solid #d4af37; }
     </style>
 </head>
 <body class="antialiased">
 
-    <div class="max-w-5xl mx-auto px-4 py-8 md:py-12">
-        
-        <!-- HEADER -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 pb-4 border-b border-amber-200">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-stone-800 tracking-tight">
-                    🏠 Kamar Admin
-                </h1>
-                <p class="text-stone-500 text-sm mt-1">Kelola konten website Wedding Organizer</p>
-            </div>
-            <button onclick="refreshData()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-stone-300 rounded-xl text-stone-700 text-sm font-medium hover:bg-stone-50 hover:border-stone-400 transition-all shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Refresh
-            </button>
+<div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 pb-4 border-b border-amber-200">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-stone-800 tracking-tight">🏠 Admin Panel</h1>
+            <p class="text-stone-500 text-sm mt-1">Kelola konten website & lihat pesan masuk</p>
         </div>
+        <button onclick="location.reload()" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-300 rounded-xl text-stone-700 text-sm hover:bg-stone-50 transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            Refresh
+        </button>
+    </div>
 
-        <!-- KONTEN DINAMIS -->
-        <div id="editor-container" class="space-y-6">
+    <!-- TAB NAVIGATION -->
+    <div class="flex gap-1 mb-6 border-b border-stone-200">
+        <button id="tabKontenBtn" onclick="switchTab('konten')" class="tab-active px-5 py-2.5 text-sm font-medium text-amber-800 transition-all">
+            📝 Konten Website
+        </button>
+        <button id="tabPesanBtn" onclick="switchTab('pesan')" class="px-5 py-2.5 text-sm font-medium text-stone-500 hover:text-stone-700 transition-all">
+            💬 Pesan Masuk
+        </button>
+    </div>
+
+    <!-- TAB KONTEN -->
+    <div id="tabKonten" class="space-y-6">
+        <div id="kontenContainer" class="space-y-6">
             <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
                 <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
                 <p class="text-stone-500 mt-3 text-sm">Memuat data konten...</p>
             </div>
         </div>
+    </div>
 
-        <!-- FOOTER -->
-        <div class="mt-8 pt-4 text-center text-stone-400 text-xs border-t border-stone-100">
-            Semua perubahan akan langsung tampil di halaman utama
+    <!-- TAB PESAN -->
+    <div id="tabPesan" class="hidden">
+        <div id="pesanContainer" class="space-y-4">
+            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
+                <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
+                <p class="text-stone-500 mt-3 text-sm">Memuat pesan masuk...</p>
+            </div>
         </div>
     </div>
 
-    <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
-        let currentData = [];
+    <div class="mt-6 pt-4 text-center text-stone-400 text-xs border-t border-stone-100">
+        Semua perubahan akan langsung tampil di halaman utama
+    </div>
+</div>
 
-        // Escape HTML
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
+    
+    // ========== SWITCH TAB ==========
+    function switchTab(tab) {
+        const tabKonten = document.getElementById('tabKonten');
+        const tabPesan = document.getElementById('tabPesan');
+        const btnKonten = document.getElementById('tabKontenBtn');
+        const btnPesan = document.getElementById('tabPesanBtn');
+        
+        if (tab === 'konten') {
+            tabKonten.classList.remove('hidden');
+            tabPesan.classList.add('hidden');
+            btnKonten.classList.add('tab-active');
+            btnKonten.classList.remove('text-stone-500');
+            btnPesan.classList.remove('tab-active');
+            btnPesan.classList.add('text-stone-500');
+        } else {
+            tabKonten.classList.add('hidden');
+            tabPesan.classList.remove('hidden');
+            btnPesan.classList.add('tab-active');
+            btnPesan.classList.remove('text-stone-500');
+            btnKonten.classList.remove('tab-active');
+            btnKonten.classList.add('text-stone-500');
+            loadMessages();
         }
-
-        // Refresh data
-        function refreshData() {
-            const container = document.getElementById('editor-container');
-            container.innerHTML = `
-                <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
-                    <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
-                    <p class="text-stone-500 mt-3 text-sm">Memuat ulang data...</p>
-                </div>
+    }
+    
+    // ========== LOAD KONTEN ==========
+    function loadKonten() {
+        const container = document.getElementById('kontenContainer');
+        const script = document.createElement('script');
+        script.src = `${scriptURL}?callback=handleKontenData`;
+        script.onerror = function() {
+            container.innerHTML = '<div class="bg-white rounded-2xl border border-red-200 p-8 text-center"><p class="text-red-600">Gagal memuat data. Coba refresh.</p></div>';
+        };
+        document.body.appendChild(script);
+    }
+    
+    function handleKontenData(data) {
+        const container = document.getElementById('kontenContainer');
+        if (!data || !data.length) {
+            container.innerHTML = '<div class="bg-white rounded-2xl border border-amber-100 p-8 text-center"><p class="text-amber-700">Belum ada data konten</p></div>';
+            return;
+        }
+        
+        // Kelompokkan berdasarkan bagian
+        const grouped = {};
+        data.forEach(item => {
+            const bagian = item.bagian || 'Lainnya';
+            if (!grouped[bagian]) grouped[bagian] = [];
+            grouped[bagian].push(item);
+        });
+        
+        let html = '';
+        for (const [bagian, items] of Object.entries(grouped)) {
+            html += `
+                <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+                    <div class="px-5 py-3 bg-stone-50 border-b border-stone-100">
+                        <h2 class="text-sm font-semibold text-stone-700">📁 ${bagian}</h2>
+                        <p class="text-xs text-stone-400">${items.length} konten</p>
+                    </div>
+                    <div class="divide-y divide-stone-100">
             `;
-            
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?callback=handleAdminContent`;
-            script.onerror = function() {
-                container.innerHTML = `
-                    <div class="bg-white rounded-2xl border border-red-200 shadow-sm p-8 text-center">
-                        <div class="text-red-500 text-3xl mb-3">⚠️</div>
-                        <p class="text-red-600 font-medium">Gagal memuat data</p>
-                        <p class="text-stone-500 text-sm mt-1">Periksa koneksi atau coba refresh</p>
-                        <button onclick="refreshData()" class="mt-4 px-4 py-2 bg-stone-100 rounded-lg text-sm hover:bg-stone-200 transition">Coba Lagi</button>
-                    </div>
-                `;
-            };
-            document.body.appendChild(script);
-        }
-
-        // Render konten
-        function handleAdminContent(data) {
-            const container = document.getElementById('editor-container');
-            currentData = data || [];
-            
-            if (!currentData.length) {
-                container.innerHTML = `
-                    <div class="bg-white rounded-2xl border border-amber-100 shadow-sm p-8 text-center">
-                        <div class="text-amber-500 text-3xl mb-3">📭</div>
-                        <p class="text-amber-700 font-medium">Belum ada data konten</p>
-                        <p class="text-stone-500 text-sm mt-1">Isi sheet "Konten" terlebih dahulu</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Kelompokkan berdasarkan bagian
-            const grouped = {};
-            currentData.forEach(item => {
-                const bagian = item.bagian || item.Bagian || 'Lainnya';
-                if (!grouped[bagian]) grouped[bagian] = [];
-                grouped[bagian].push(item);
-            });
-
-            let html = '';
-            
-            for (const [bagian, items] of Object.entries(grouped)) {
+            items.forEach(item => {
+                const idVal = item.id || '';
+                const descVal = item.deskripsi || '';
+                if (!idVal) return;
                 html += `
-                    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 bg-stone-50 border-b border-stone-100">
-                            <h2 class="text-base font-semibold text-stone-700">
-                                📁 ${bagian}
-                            </h2>
-                            <p class="text-xs text-stone-400 mt-0.5">${items.length} konten</p>
-                        </div>
-                        <div class="divide-y divide-stone-100">
-                `;
-                
-                items.forEach(item => {
-                    const idVal = item.id || item.ID || '';
-                    const descVal = item.deskripsi || item.Deskripsi || '';
-                    
-                    if (!idVal) return;
-                    
-                    html += `
-                        <div class="p-5 hover:bg-stone-50/50 transition" data-id="${idVal}">
-                            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2 mb-2">
-                                        <code class="text-xs font-mono bg-stone-100 px-2 py-0.5 rounded text-stone-600">${escapeHtml(idVal)}</code>
-                                        <span id="status-${idVal}" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Belum disimpan</span>
-                                    </div>
-                                    <textarea 
-                                        id="input-${idVal}" 
-                                        class="w-full border border-stone-200 rounded-xl p-3 text-stone-700 bg-white focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y"
-                                        rows="${descVal.length > 200 ? 4 : 3}"
-                                        placeholder="Ketik konten di sini..."
-                                    >${escapeHtml(descVal)}</textarea>
+                    <div class="p-4 hover:bg-stone-50/50 transition">
+                        <div class="flex flex-col md:flex-row md:items-start gap-3">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                                    <code class="text-xs font-mono bg-stone-100 px-2 py-0.5 rounded text-stone-600">${escapeHtml(idVal)}</code>
+                                    <span id="status-${idVal}" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Belum disimpan</span>
                                 </div>
-                                <div class="md:w-28 flex-shrink-0">
-                                    <button 
-                                        onclick="updateData('${idVal}')" 
-                                        class="w-full md:w-auto px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-xl transition shadow-sm">
-                                        💾 Simpan
-                                    </button>
-                                </div>
+                                <textarea id="input-${idVal}" class="w-full border border-stone-200 rounded-xl p-3 text-stone-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y" rows="${descVal.length > 200 ? 4 : 3}" placeholder="Ketik konten di sini...">${escapeHtml(descVal)}</textarea>
+                            </div>
+                            <div class="md:w-28 flex-shrink-0">
+                                <button onclick="updateKonten('${idVal}')" class="w-full md:w-auto px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-xl transition shadow-sm">💾 Simpan</button>
                             </div>
                         </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
                     </div>
                 `;
-            }
-            
-            container.innerHTML = html;
+            });
+            html += `</div></div>`;
         }
-
-        // Update data ke server
-        async function updateData(id) {
-            const textarea = document.getElementById('input-' + id);
-            if (!textarea) return;
-            
-            const desc = textarea.value;
-            const statusEl = document.getElementById('status-' + id);
-            const btn = event?.target || textarea.nextElementSibling?.querySelector('button');
-            
-            // Loading state
-            if (statusEl) {
-                statusEl.innerHTML = '⏳ Menyimpan...';
-                statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
-            }
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '⏳ Menyimpan...';
-            }
-            
-            const formData = new FormData();
-            formData.append('action', 'updateKonten');
-            formData.append('id', id);
-            formData.append('deskripsi', desc);
-            
-            try {
-                const response = await fetch(scriptURL, { method: 'POST', body: formData });
-                const result = await response.text();
-                
-                if (result.includes('✅')) {
-                    if (statusEl) {
-                        statusEl.innerHTML = '✓ Tersimpan';
-                        statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700';
-                    }
-                    // Reset status setelah 2.5 detik
-                    setTimeout(() => {
-                        if (statusEl) {
-                            statusEl.innerHTML = 'Tersimpan';
-                            statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500';
-                        }
-                    }, 2500);
-                } else {
-                    throw new Error(result);
-                }
-            } catch(err) {
+        container.innerHTML = html;
+    }
+    
+    // Update konten
+    async function updateKonten(id) {
+        const textarea = document.getElementById('input-' + id);
+        if (!textarea) return;
+        const desc = textarea.value;
+        const statusEl = document.getElementById('status-' + id);
+        
+        if (statusEl) {
+            statusEl.innerHTML = '⏳ Menyimpan...';
+            statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
+        }
+        
+        const formData = new FormData();
+        formData.append('action', 'updateKonten');
+        formData.append('id', id);
+        formData.append('deskripsi', desc);
+        
+        try {
+            const response = await fetch(scriptURL, { method: 'POST', body: formData });
+            const result = await response.text();
+            if (result.includes('✅')) {
                 if (statusEl) {
-                    statusEl.innerHTML = '✗ Gagal';
-                    statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600';
+                    statusEl.innerHTML = '✓ Tersimpan';
+                    statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700';
                 }
                 setTimeout(() => {
                     if (statusEl) {
-                        statusEl.innerHTML = 'Coba lagi';
-                        statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600';
+                        statusEl.innerHTML = 'Tersimpan';
+                        statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500';
                     }
                 }, 2500);
-                console.error(err);
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '💾 Simpan';
-                }
+            } else throw new Error(result);
+        } catch(err) {
+            if (statusEl) {
+                statusEl.innerHTML = '✗ Gagal';
+                statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600';
             }
         }
-
-        // Init
-        window.onload = function() {
-            refreshData();
+    }
+    
+    // ========== LOAD PESAN ==========
+    function loadMessages() {
+        const container = document.getElementById('pesanContainer');
+        const script = document.createElement('script');
+        script.src = `${scriptURL}?getMessages=true&callback=handleMessagesData`;
+        script.onerror = function() {
+            container.innerHTML = '<div class="bg-white rounded-2xl border border-red-200 p-8 text-center"><p class="text-red-600">Gagal memuat pesan</p></div>';
         };
-    </script>
+        document.body.appendChild(script);
+    }
+    
+    function handleMessagesData(messages) {
+        const container = document.getElementById('pesanContainer');
+        if (!messages || !messages.length) {
+            container.innerHTML = '<div class="bg-white rounded-2xl border border-stone-200 p-8 text-center"><p class="text-stone-500">📭 Belum ada pesan masuk</p></div>';
+            return;
+        }
+        
+        let html = `
+            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+                <div class="px-5 py-3 bg-stone-50 border-b border-stone-100">
+                    <h2 class="text-sm font-semibold text-stone-700">💬 Daftar Pesan Booking</h2>
+                    <p class="text-xs text-stone-400">${messages.length} pesan</p>
+                </div>
+                <div class="divide-y divide-stone-100">
+        `;
+        
+        messages.forEach(msg => {
+            const waNumber = msg.whatsapp.replace(/[^0-9]/g, '');
+            html += `
+                <div class="p-4 hover:bg-stone-50/50 transition">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="font-bold text-stone-800">${escapeHtml(msg.nama)}</span>
+                                <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">${escapeHtml(msg.paket)}</span>
+                                <span class="text-xs text-stone-400">${escapeHtml(msg.waktu)}</span>
+                            </div>
+                            <p class="text-sm text-stone-600"><span class="text-stone-400">📅 Acara:</span> ${escapeHtml(msg.tanggalAcara)}</p>
+                            <p class="text-sm text-stone-600 mt-1"><span class="text-stone-400">📝 Pesan:</span> ${escapeHtml(msg.pesan) || '-'}</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <a href="https://wa.me/${waNumber}?text=Halo%20${encodeURIComponent(msg.nama)}%2C%20terima%20kasih%20telah%20menghubungi%20kami..." target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl transition shadow-sm">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.972 3.6 1.488 5.571 1.487 5.522 0 10.012-4.49 10.012-10.011 0-2.672-1.041-5.184-2.931-7.074-1.89-1.89-4.401-2.93-7.073-2.93-5.523 0-10.012 4.49-10.012 10.012 0 1.894.531 3.74 1.537 5.336l.496.788-1.079 3.942 4.064-1.062.792.514zm5.941-5.998c-.338-.152-1.987-.966-2.281-1.076-.274-.118-.483-.18-.698.18-.215.36-.826 1.068-1.017 1.292-.191.224-.372.254-.71.092-.913-.453-1.906-1.114-2.597-2.008-.208-.27-.319-.54-.319-.786 0-.247.059-.356.149-.506.09-.15.188-.27.281-.405.094-.135.149-.236.224-.394.075-.158.037-.292-.019-.41-.056-.118-.648-1.564-.888-2.14-.234-.562-.472-.485-.65-.494-.175-.009-.375-.011-.575-.011-.2 0-.525.075-.8.375-.275.3-1.05 1.027-1.05 2.5 0 1.474 1.074 2.9 1.224 3.101.15.202 2.105 3.227 5.104 4.525.714.309 1.27.493 1.705.63.716.227 1.367.195 1.882.118.575-.086 1.787-.73 2.039-1.435.252-.705.252-1.31.177-1.435-.075-.125-.275-.202-.575-.354z"/></svg>
+                                WA
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+        container.innerHTML = html;
+    }
+    
+    // ========== UTILITY ==========
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // INIT
+    window.onload = function() {
+        loadKonten();
+    };
+</script>
 </body>
 </html>
