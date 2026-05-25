@@ -9,32 +9,54 @@
         <h1 class="text-3xl font-bold mb-8 text-amber-800">Kamar Admin 🏠</h1>
         
         <div id="editor-container" class="grid gap-6">
-            <!-- Form Edit akan muncul otomatis di sini -->
-            <p>Loading data konten...</p>
+            <p id="loading-text" class="text-gray-500 font-semibold animate-pulse">Sedang mengambil data dari Google Sheets, tunggu sebentar Bre...</p>
         </div>
     </div>
 
     <script>
+        // PASTIKAN URL INI SUDAH SESUAI DENGAN WEB APP APPS SCRIPT-MU
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz-aTwKl1ien7KCuEyxg_kXaVTn5gS2_BTQKkMHwjriT6pYFACdUkglmVahntfr7lKm/exec';
 
         async function loadAdminData() {
-            const response = await fetch(scriptURL);
-            const data = await response.json();
-            const container = document.getElementById('editor-container');
-            container.innerHTML = '';
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                const container = document.getElementById('editor-container');
+                container.innerHTML = '';
 
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
-                card.innerHTML = `
-                    <h3 class="font-bold text-gray-500 text-sm uppercase mb-2">${item.bagian} (${item.id})</h3>
-                    <textarea id="input-${item.id}" class="w-full border p-2 rounded mb-4">${item.deskripsi}</textarea>
-                    <button onclick="updateData('${item.id}')" class="bg-amber-700 text-white px-4 py-2 rounded text-sm hover:bg-black transition">
-                        Simpan Perubahan
-                    </button>
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-red-500">Data kosong, cek tab Konten di Sheets-mu Bre!</p>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    // Trik aman: deteksi kolom baik huruf besar maupun kecil
+                    const idVal = item.id || item.ID || '';
+                    const bagianVal = item.bagian || item.Bagian || '';
+                    const descVal = item.deskripsi || item.Deskripsi || '';
+
+                    if (!idVal) return; // Lewati jika ID kosong
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-600";
+                    card.innerHTML = `
+                        <h3 class="font-bold text-gray-500 text-sm uppercase mb-2">${bagianVal} (${idVal})</h3>
+                        <textarea id="input-${idVal}" class="w-full border p-2 rounded mb-4" rows="3">${descVal}</textarea>
+                        <button onclick="updateData('${idVal}')" class="bg-amber-700 text-white px-4 py-2 rounded text-sm hover:bg-black transition">
+                            Simpan Perubahan
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                document.getElementById('editor-container').innerHTML = `
+                    <div class="bg-red-50 p-4 rounded-xl text-red-700">
+                        <p class="font-bold">Waduh, Gagal Manggil Data! 💥</p>
+                        <p class="text-sm mt-1">Error: ${error.message}</p>
+                        <p class="text-xs mt-2 bg-red-100 p-2 rounded">Tips: Pastikan Apps Script sudah di-deploy sebagai "Anyone" (Siapa saja) dan URL-nya sudah benar.</p>
+                    </div>
                 `;
-                container.appendChild(card);
-            });
+            }
         }
 
         function updateData(id) {
@@ -45,8 +67,8 @@
             formData.append('deskripsi', desc);
 
             fetch(scriptURL, { method: 'POST', body: formData })
-            .then(res => alert('Mantap Bre, sudah terupdate!'))
-            .catch(err => alert('Waduh gagal, cek koneksi Bre!'));
+            .then(res => alert('Mantap Bre, data ' + id + ' sudah terupdate!'))
+            .catch(err => alert('Waduh gagal nyimpen, cek koneksi Bre!'));
         }
 
         window.onload = loadAdminData;
