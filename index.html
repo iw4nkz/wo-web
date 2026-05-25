@@ -67,12 +67,20 @@
                     <input type="tel" name="whatsapp" required class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
                 <div>
+                    <label class="block text-sm font-semibold mb-1">Tanggal Acara</label>
+                    <input type="date" name="tanggal" required class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
                     <label class="block text-sm font-semibold mb-1">Pilih Paket</label>
                     <select name="paket" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                         <option value="Silver">Paket Silver (Ekonomis)</option>
                         <option value="Gold">Paket Gold (Favorit)</option>
                         <option value="Custom">Custom Service</option>
                     </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Pesan / Catatan Tambahan</label>
+                    <textarea name="pesan" rows="3" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Contoh: Konsep outdoor, request warna dekorasi maroon, dll."></textarea>
                 </div>
                 <button type="submit" id="submitBtn" class="w-full bg-amber-700 text-white py-4 rounded-xl font-bold hover:bg-amber-800 transition">KIRIM JADWAL KONSULTASI</button>
             </form>
