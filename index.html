@@ -124,27 +124,23 @@
         });
 
         // FUNGSI UNTUK MENGAMBIL DATA DARI GOOGLE SHEET KONTEN
-        async function loadContent() {
-            try {
-                const response = await fetch(scriptURL, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    }
-                });
-                const data = await response.json();
-                
-                data.forEach(item => {
-                    const element = document.getElementById(item.id);
-                    if (element) {
-                        element.innerHTML = item.deskripsi;
-                    }
-                });
-            } catch (error) {
-                console.error("Gagal memuat konten dinamis:", error);
-            }
+       // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS)
+        function handleHomeContent(data) {
+            data.forEach(item => {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    element.innerHTML = item.deskripsi;
+                }
+            });
         }
+
+        // Jalankan pemanggilan data via tag script begitu halaman siap
+        window.addEventListener('DOMContentLoaded', () => {
+            const script = document.createElement('script');
+            // Kita tambahkan parameter ?callback=handleHomeContent di ujung URL
+            script.src = `${scriptURL}?callback=handleHomeContent`;
+            document.body.appendChild(script);
+        });
 
         // Jalankan fungsi loadContent begitu halaman selesai dimuat
         window.addEventListener('DOMContentLoaded', loadContent);
