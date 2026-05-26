@@ -34,7 +34,9 @@
             <p id="about-text" class="text-lg md:text-xl mb-8 font-light italic">Loading...</p>
             <a href="#booking" class="border-2 border-white px-10 py-3 rounded-full hover:bg-white hover:text-amber-900 transition-all font-semibold">Konsultasi Sekarang</a>
         </div>
-    </section> <section id="paket" class="py-20 bg-amber-50/50 px-4">
+    </section>
+
+    <section id="paket" class="py-20 bg-amber-50/50 px-4">
         <div class="max-w-6xl mx-auto text-center">
             <h3 class="text-3xl font-bold mb-12 text-amber-900">Paket Utama</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -58,34 +60,29 @@
     </section>
 
     <section id="galeri" class="py-20 bg-white px-4">
-    <div class="max-w-6xl mx-auto text-center">
-        <h3 class="text-3xl font-bold mb-4 text-amber-900">Dokumentasi Event</h3>
-        <p class="text-slate-500 mb-8 max-w-md mx-auto">Momen kebahagiaan dari pengantin yang telah mempercayakan hari bahagianya kepada kami.</p>
-        
-        <!-- SLIDESHOW CONTAINER -->
-        <div class="relative max-w-4xl mx-auto overflow-hidden rounded-2xl shadow-xl">
-            <div id="slideshowContainer" class="relative h-80 md:h-96">
-                <div id="slideshowTrack" class="flex transition-transform duration-500 ease-out h-full">
-                    <!-- Slides akan diisi JavaScript -->
+        <div class="max-w-6xl mx-auto text-center">
+            <h3 class="text-3xl font-bold mb-4 text-amber-900">Dokumentasi Event</h3>
+            <p class="text-slate-500 mb-8 max-w-md mx-auto">Momen kebahagiaan dari pengantin yang telah mempercayakan hari bahagianya kepada kami.</p>
+            
+            <div class="relative max-w-4xl mx-auto overflow-hidden rounded-2xl shadow-xl bg-gray-100">
+                <div id="slideshowContainer" class="relative h-80 md:h-96 w-full">
+                    <div id="slideshowTrack" class="flex w-full h-full transition-transform duration-500 ease-out">
+                        </div>
+                    
+                    <button id="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition z-10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button id="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition z-10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    
+                    <div id="slideDots" class="absolute bottom-10 left-0 right-0 flex justify-center gap-2 z-10"></div>
                 </div>
                 
-                <!-- Tombol navigasi -->
-                <button id="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <button id="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                </button>
-                
-                <!-- Indikator dot -->
-                <div id="slideDots" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2"></div>
+                <div id="slideCaption" class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-center py-2 text-sm z-10 min-h-[36px] flex items-center justify-center px-4"></div>
             </div>
-            
-            <!-- Caption gambar -->
-            <div id="slideCaption" class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-center py-2 text-sm"></div>
         </div>
-    </div>
-</section>
+    </section>
 
     <section id="testimoni" class="py-20 bg-amber-50/30 px-4">
         <div class="max-w-6xl mx-auto text-center">
@@ -142,6 +139,7 @@
     const form = document.getElementById('weddingForm');
     const btn = document.getElementById('submitBtn');
     const msg = document.getElementById('responseMsg');
+    let listTanggalPenuh = [];
 
     // Tampilkan loading indicator di awal
     function showLoadingIndicator() {
@@ -183,64 +181,62 @@
 
     // ========== VALIDASI TANGGAL BOOKING OTOMATIS ==========
     const inputTanggal = document.querySelector('input[name="tanggal"]');
-
     if (inputTanggal) {
-    inputTanggal.addEventListener('change', function() {
-        const tanggalDipilih = this.value; // Format otomatis HTML5: yyyy-mm-dd
-        
-        // Cek apakah tanggal yang dipilih ada di dalam daftar tanggal penuh
-        if (listTanggalPenuh.includes(tanggalDipilih)) {
-            // 1. Munculkan pesan peringatan merah
-            msg.classList.remove('hidden', 'text-green-600');
-            msg.classList.add('text-red-600');
-            msg.innerHTML = "⚠️ Waduh Bre, tanggal ini sudah di-booking pengantin lain. Silakan pilih tanggal alternatif ya!";
+        inputTanggal.addEventListener('change', function() {
+            const tanggalDipilih = this.value; 
             
-            // 2. Kunci tombol submit biar ga bisa diklik
-            btn.disabled = true;
-            btn.classList.remove('bg-amber-700', 'hover:bg-amber-800');
-            btn.classList.add('bg-gray-400', 'cursor-not-allowed');
-        } else {
-            // Jika tanggal aman/kosong, kembalikan tombol seperti semula
-            msg.classList.add('hidden');
-            btn.disabled = false;
-            btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            btn.classList.add('bg-amber-700', 'hover:bg-amber-800');
-        }
-    });
-}
-
- // ========== KONTEN UTAMA (Hero, Paket, Testimoni) ==========
-    function handleHomeContent(response) {
-    // KUNCINYA DI SINI: Kita ambil array konten dari dalam objek response
-    const data = response && response.konten ? response.konten : [];
-
-    if (!data || data.length === 0) {
-        console.warn("Data konten kosong dari server");
-        return;
-    }
-    
-    data.forEach(item => {
-        const element = document.getElementById(item.id);
-        if (element) {
-            if (element.tagName === 'IMG') {
-                element.src = item.deskripsi || '';
-                if (!item.deskripsi) {
-                    element.src = 'https://via.placeholder.com/400x300?text=Gambar+Coming+Soon';
-                }
+            if (listTanggalPenuh.includes(tanggalDipilih)) {
+                msg.classList.remove('hidden', 'text-green-600');
+                msg.classList.add('text-red-600');
+                msg.innerHTML = "⚠️ Waduh Bre, tanggal ini sudah di-booking pengantin lain. Silakan pilih tanggal alternatif ya!";
+                
+                btn.disabled = true;
+                btn.classList.remove('bg-amber-700', 'hover:bg-amber-800');
+                btn.classList.add('bg-gray-400', 'cursor-not-allowed');
             } else {
-                element.innerHTML = item.deskripsi || '-';
+                msg.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.add('bg-amber-700', 'hover:bg-amber-800');
             }
-        }
-    });
-
-    // AMBIL TANGGAL PENUH: Simpan daftar tanggal booking ke variabel global
-    if (response && response.bookedDates) {
-        listTanggalPenuh = response.bookedDates;
+        });
     }
-}
 
-// Variabel global untuk menyimpan tanggal yang sudah penuh di-booking
-let listTanggalPenuh = [];
+    // ========== KONTEN UTAMA (Hero, Paket, Testimoni) ==========
+    function handleHomeContent(response) {
+        // KOREKSI AMAN: Cek apakah response berupa Array mentah atau Objek terbungkus
+        let data = [];
+        if (Array.isArray(response)) {
+            data = response;
+        } else if (response && response.konten) {
+            data = response.konten;
+        }
+
+        if (!data || data.length === 0) {
+            console.warn("Data konten kosong atau format tidak sesuai");
+            return;
+        }
+        
+        data.forEach(item => {
+            if (!item.id) return;
+            const element = document.getElementById(item.id.trim());
+            if (element) {
+                if (element.tagName === 'IMG') {
+                    element.src = item.deskripsi || '';
+                    if (!item.deskripsi) {
+                        element.src = 'https://via.placeholder.com/400x300?text=Gambar+Coming+Soon';
+                    }
+                } else {
+                    element.innerHTML = item.deskripsi || '-';
+                }
+            }
+        });
+
+        // Simpan daftar tanggal booking jika dikirim bersama objek response
+        if (response && response.bookedDates) {
+            listTanggalPenuh = response.bookedDates;
+        }
+    }
 
     // ========== SLIDESHOW GALERI DINAMIS ==========
     let galleryData = [];
@@ -278,6 +274,7 @@ let listTanggalPenuh = [];
         slideshowTrack.innerHTML = '';
         galleryData.forEach((img) => {
             const slide = document.createElement('div');
+            // Ditambahkan w-full agar ukuran flex item konsisten 100% dari parent track
             slide.className = 'w-full h-full flex-shrink-0 relative';
             slide.innerHTML = `<img src="${img.url}" alt="${img.caption || 'Galeri'}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/800x500?text=Gambar+Gagal+Load'">`;
             slideshowTrack.appendChild(slide);
@@ -354,7 +351,7 @@ let listTanggalPenuh = [];
 
     // ========== LOAD SEMUA DATA SAAT HALAMAN DIBUKA ==========
     window.addEventListener('DOMContentLoaded', () => {
-        // Load konten utama
+        // Load konten utama via JSONP
         const scriptKonten = document.createElement('script');
         scriptKonten.src = `${scriptURL}?callback=handleHomeContent`;
         scriptKonten.onerror = function() {
