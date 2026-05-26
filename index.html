@@ -10,20 +10,41 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         h1, h2 { font-family: 'Playfair Display', serif; }
+        /* Animasi slide menu mobile */
+        .mobile-menu-open { display: block !important; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
 
+    <!-- NAVBAR MOBILE FRIENDLY -->
     <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 id="brand-name" class="text-2xl font-bold text-amber-700">Cita & Rias</h1>
-            <div class="space-x-6 hidden md:block">
+            
+            <!-- Tombol Hamburger untuk HP -->
+            <button id="menuBtn" class="block md:hidden text-amber-700 focus:outline-none">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            
+            <!-- Menu Desktop -->
+            <div class="hidden md:flex space-x-6">
                 <a href="#" class="hover:text-amber-600 transition">Home</a>
                 <a href="#paket" class="hover:text-amber-600 transition">Paket</a>
                 <a href="#galeri" class="hover:text-amber-600 transition">Galeri</a>
                 <a href="#testimoni" class="hover:text-amber-600 transition">Testimoni</a>
                 <a href="#booking" class="bg-amber-700 text-white px-5 py-2 rounded-full hover:bg-amber-800">Booking</a>
             </div>
+        </div>
+        
+        <!-- Menu Mobile (Dropdown) -->
+        <div id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-amber-200 flex flex-col space-y-3 bg-white/90 rounded-xl p-4">
+            <a href="#" class="hover:text-amber-600 transition py-2 px-3 rounded-lg hover:bg-amber-50">🏠 Home</a>
+            <a href="#paket" class="hover:text-amber-600 transition py-2 px-3 rounded-lg hover:bg-amber-50">📦 Paket</a>
+            <a href="#galeri" class="hover:text-amber-600 transition py-2 px-3 rounded-lg hover:bg-amber-50">📸 Galeri</a>
+            <a href="#testimoni" class="hover:text-amber-600 transition py-2 px-3 rounded-lg hover:bg-amber-50">💬 Testimoni</a>
+            <a href="#booking" class="bg-amber-700 text-white text-center py-2 px-3 rounded-full hover:bg-amber-800">📅 Booking</a>
         </div>
     </nav>
     
@@ -137,6 +158,23 @@
         const form = document.getElementById('weddingForm');
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('responseMsg');
+
+        // ========== MENU HAMBURGER UNTUK HP ==========
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Tutup menu saat klik link di mobile
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        }
 
         // ========== FORM SUBMIT ==========
         form.addEventListener('submit', async (e) => {
