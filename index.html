@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WO Pangkalan Bun | Mewujudkan Pernikahan Impian</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght=300;400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
         h1, h2 { font-family: 'Playfair Display', serif; }
@@ -62,16 +62,21 @@
     <section id="galeri" class="py-20 bg-white px-4">
         <div class="max-w-6xl mx-auto text-center">
             <h3 class="text-3xl font-bold mb-4 text-amber-900">Dokumentasi Event</h3>
-            <p class="text-slate-500 mb-12 max-w-md mx-auto">Beberapa momen kebahagiaan dari pengantin yang telah mempercayakan hari bahagianya kepada kami.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="overflow-hidden rounded-xl h-64 shadow-sm group bg-gray-100">
-                    <img id="gallery-img1" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Dekorasi" onerror="this.src='https://via.placeholder.com/400x300?text=Gallery+1'">
-                </div>
-                <div class="overflow-hidden rounded-xl h-64 shadow-sm group bg-gray-100">
-                    <img id="gallery-img2" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Riasan" onerror="this.src='https://via.placeholder.com/400x300?text=Gallery+2'">
-                </div>
-                <div class="overflow-hidden rounded-xl h-64 shadow-sm group bg-gray-100">
-                    <img id="gallery-img3" src="" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Pelaminan" onerror="this.src='https://via.placeholder.com/400x300?text=Gallery+3'">
+            <p class="text-slate-500 mb-8 max-w-md mx-auto">Momen kebahagiaan dari pengantin yang telah mempercayakan hari bahagianya kepada kami.</p>
+            
+            <div class="relative max-w-4xl mx-auto overflow-hidden rounded-2xl shadow-xl bg-gray-100">
+                <div class="relative h-80 md:h-96 w-full">
+                    <div id="slideshowTrack" class="flex w-full h-full transition-transform duration-500 ease-out">
+                        </div>
+                    
+                    <button id="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition z-10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button id="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition z-10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    
+                    <div id="slideDots" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10"></div>
                 </div>
             </div>
         </div>
@@ -157,20 +162,92 @@
             });
         });
 
+        // MANAJEMEN SLIDESHOW GALERI
+        let galleryImages = [];
+        let currentSlide = 0;
+        let slideInterval;
+
+        function setupSlideshow(images) {
+            const track = document.getElementById('slideshowTrack');
+            const dotsContainer = document.getElementById('slideDots');
+            if (!track || !images.length) return;
+
+            galleryImages = images;
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            // Buat elemen gambar slider secara dinamis
+            images.forEach((imgSrc, idx) => {
+                const slide = document.createElement('div');
+                slide.className = 'w-full h-full flex-shrink-0 relative';
+                slide.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover" alt="Event ${idx+1}" onerror="this.src='https://via.placeholder.com/800x500?text=Gambar+Gagal+Load'">`;
+                track.appendChild(slide);
+
+                // Buat indikator dot
+                const dot = document.createElement('button');
+                dot.className = `w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-amber-400 w-4' : 'bg-white/60 hover:bg-white/80'}`;
+                dot.onclick = () => goToSlide(idx);
+                dotsContainer.appendChild(dot);
+            });
+
+            // Jalankan auto slide tiap 4 detik
+            startAutoSlide();
+
+            // Set tombol manual navigasi
+            document.getElementById('prevSlide').onclick = () => changeSlide(-1);
+            document.getElementById('nextSlide').onclick = () => changeSlide(1);
+        }
+
+        function changeSlide(direction) {
+            if (!galleryImages.length) return;
+            currentSlide = (currentSlide + direction + galleryImages.length) % galleryImages.length;
+            updateSlidePosition();
+            resetAutoSlide();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlidePosition();
+            resetAutoSlide();
+        }
+
+        function updateSlidePosition() {
+            const track = document.getElementById('slideshowTrack');
+            const dots = document.getElementById('slideDots').children;
+            if (!track) return;
+
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].className = i === currentSlide ? 'w-4 h-2 rounded-full bg-amber-400 transition-all' : 'w-2 h-2 rounded-full bg-white/60 hover:bg-white/80 transition-all';
+            }
+        }
+
+        function startAutoSlide() {
+            slideInterval = setInterval(() => {
+                if (galleryImages.length) {
+                    currentSlide = (currentSlide + 1) % galleryImages.length;
+                    updateSlidePosition();
+                }
+            }, 4000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(slideInterval);
+            startAutoSlide();
+        }
+
         // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
         function handleHomeContent(response) {
-            // FIX AMAN: Cek apakah response berupa Array langsung atau objek bungkus .konten
-            let data = [];
-            if (Array.isArray(response)) {
-                data = response;
-            } else if (response && response.konten) {
-                data = response.konten;
-            }
+            let data = Array.isArray(response) ? response : (response && response.konten ? response.konten : []);
 
             if (!data || data.length === 0) {
                 console.warn("Data dari Apps Script kosong, Bre!");
                 return;
             }
+
+            // Pisahkan penampung gambar untuk slideshow
+            let extractedImages = [];
 
             data.forEach(item => {
                 if(!item.id) return;
@@ -182,7 +259,17 @@
                         element.innerHTML = item.deskripsi || '';
                     }
                 }
+                
+                // Masukkan gambar galeri (gallery-img1, gallery-img2, dst) ke array slideshow
+                if (item.id.trim().startsWith('gallery-img') && item.deskripsi) {
+                    extractedImages.push(item.deskripsi);
+                }
             });
+
+            // Inisialisasi jalannya slideshow
+            if(extractedImages.length > 0) {
+                setupSlideshow(extractedImages);
+            }
         }
 
         // Panggil data dari Google Sheet via JSONP script injection
