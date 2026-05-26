@@ -1,399 +1,138 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="icon" href="data:,">
-    <title>Kamar Admin - WO Pangkalan Bun</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamar Admin | WO Pangkalan Bun</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        h1, h3 { font-family: 'Playfair Display', serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-<div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
-    
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 pb-4 border-b border-amber-200">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-stone-800 tracking-tight">🏠 Admin Panel</h1>
-            <p class="text-stone-500 text-sm mt-1">Kelola konten website & lihat pesan masuk</p>
+    <div class="bg-amber-700 text-white shadow-md p-6 mb-8">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold">Kamar Kendali Admin</h1>
+                <p class="text-amber-100 text-sm">Kelola konten website WO Pangkalan Bun dengan mudah</p>
+            </div>
+            <span class="bg-amber-600 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider">Tab Galeri Active</span>
         </div>
-        <button onclick="location.reload()" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-300 rounded-xl text-stone-700 text-sm hover:bg-stone-50 transition shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            Refresh
-        </button>
     </div>
 
-    <div class="flex gap-1 mb-6 border-b border-stone-200">
-        <button id="tabKontenBtn" onclick="switchTab('konten')" class="tab-active px-5 py-2.5 text-sm font-medium text-amber-800 transition-all">
-            📝 Konten Website
-        </button>
-        <button id="tabPesanBtn" onclick="switchTab('pesan')" class="px-5 py-2.5 text-sm font-medium text-stone-500 hover:text-stone-700 transition-all">
-            💬 Pesan Masuk
-        </button>
-    </div>
-
-    <div id="tabKonten" class="space-y-6">
-        <div id="kontenContainer" class="space-y-6">
-            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
-                <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
-                <p class="text-stone-500 mt-3 text-sm">Memuat data konten...</p>
+    <main class="max-w-4xl mx-auto px-4 space-y-6">
+        
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">📂 Teks & Konten Utama Website</h3>
+            <div id="textFormContainer" class="space-y-4">
+                <p class="text-slate-500 italic text-sm">Mengambil data teks...</p>
             </div>
         </div>
-    </div>
 
-    <div id="tabPesan" class="hidden">
-        <div id="pesanContainer" class="space-y-4">
-            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 text-center">
-                <div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div>
-                <p class="text-stone-500 mt-3 text-sm">Memuat pesan masuk...</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="mt-6 pt-4 text-center text-stone-400 text-xs border-t border-stone-100">
-        Semua perubahan akan langsung tampil di halaman utama
-    </div>
-</div>
-
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbytTqkazoRJ5I850ewt0ZXbA76sV7MP1PEeZv3my1s-CKqJJF5k-cRRsLR1rwj_6Ib5/exec';
-    
-    // ========== SWITCH TAB ==========
-    function switchTab(tab) {
-        const tabKonten = document.getElementById('tabKonten');
-        const tabPesan = document.getElementById('tabPesan');
-        const btnKonten = document.getElementById('tabKontenBtn');
-        const btnPesan = document.getElementById('tabPesanBtn');
-        
-        if (tab === 'konten') {
-            tabKonten.classList.remove('hidden');
-            tabPesan.classList.add('hidden');
-            btnKonten.classList.add('tab-active');
-            btnKonten.classList.remove('text-stone-500');
-            btnPesan.classList.remove('tab-active');
-            btnPesan.classList.add('text-stone-500');
-        } else {
-            tabKonten.classList.add('hidden');
-            tabPesan.classList.remove('hidden');
-            btnPesan.classList.add('tab-active');
-            btnPesan.classList.remove('text-stone-500');
-            btnKonten.classList.remove('tab-active');
-            btnKonten.classList.add('text-stone-500');
-            loadMessages();
-        }
-    }
-    
-    // ========== LOAD KONTEN ==========
-    function loadKonten() {
-        const container = document.getElementById('kontenContainer');
-        const script = document.createElement('script');
-        script.src = `${scriptURL}?callback=handleKontenData`;
-        script.onerror = function() {
-            container.innerHTML = '<div class="bg-white rounded-2xl border border-red-200 p-8 text-center"><p class="text-red-600">Gagal memuat data. Coba refresh.</p></div>';
-        };
-        document.body.appendChild(script);
-    }
-    
-    // FIX DI SINI: Menerima 'response' objek, lalu mengarahkan isi array-nya ke variabel 'data'
-    function handleKontenData(response) {
-        const container = document.getElementById('kontenContainer');
-        
-        // Ambil array konten dari properti .konten milik objek response
-        const data = response && response.konten ? response.konten : [];
-        
-        if (!data || !data.length) {
-            container.innerHTML = '<div class="bg-white rounded-2xl border border-amber-100 p-8 text-center"><p class="text-amber-700">Belum ada data konten</p></div>';
-            return;
-        }
-        
-        // Kelompokkan berdasarkan bagian
-        const grouped = {};
-        data.forEach(item => {
-            const bagian = item.bagian || 'Lainnya';
-            if (!grouped[bagian]) grouped[bagian] = [];
-            grouped[bagian].push(item);
-        });
-        
-        let html = '';
-        for (const [bagian, items] of Object.entries(grouped)) {
-            html += `
-                <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-                    <div class="px-5 py-3 bg-stone-50 border-b border-stone-100">
-                        <h2 class="text-sm font-semibold text-stone-700">📁 ${bagian}</h2>
-                        <p class="text-xs text-stone-400">${items.length} konten</p>
-                    </div>
-                    <div class="divide-y divide-stone-100">
-            `;
-            items.forEach(item => {
-                const idVal = item.id || '';
-                const descVal = item.deskripsi || '';
-                if (!idVal) return;
-                html += `
-                    <div class="p-4 hover:bg-stone-50/50 transition">
-                        <div class="flex flex-col md:flex-row md:items-start gap-3">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex flex-wrap items-center gap-2 mb-2">
-                                    <code class="text-xs font-mono bg-stone-100 px-2 py-0.5 rounded text-stone-600">${escapeHtml(idVal)}</code>
-                                    <span id="status-${idVal}" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Belum disimpan</span>
-                                </div>
-                                <textarea id="input-${idVal}" class="w-full border border-stone-200 rounded-xl p-3 text-stone-700 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition resize-y" rows="${descVal.length > 200 ? 4 : 3}" placeholder="Ketik konten di sini...">${escapeHtml(descVal)}</textarea>
-                            </div>
-                            <div class="md:w-28 flex-shrink-0">
-                                <button onclick="updateKonten('${idVal}')" class="w-full md:w-auto px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-xl transition shadow-sm">💾 Simpan</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            html += `</div></div>`;
-        }
-        container.innerHTML = html;
-    }
-    
-    // Update konten
-    async function updateKonten(id) {
-        const textarea = document.getElementById('input-' + id);
-        if (!textarea) return;
-        const desc = textarea.value;
-        const statusEl = document.getElementById('status-' + id);
-        
-        if (statusEl) {
-            statusEl.innerHTML = '⏳ Menyimpan...';
-            statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
-        }
-        
-        const formData = new FormData();
-        formData.append('action', 'updateKonten');
-        formData.append('id', id);
-        formData.append('deskripsi', desc);
-        
-        try {
-            const response = await fetch(scriptURL, { method: 'POST', body: formData });
-            const result = await response.text();
-            if (result.includes('✅')) {
-                if (statusEl) {
-                    statusEl.innerHTML = '✓ Tersimpan';
-                    statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700';
-                }
-                setTimeout(() => {
-                    if (statusEl) {
-                        statusEl.innerHTML = 'Tersimpan';
-                        statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500';
-                    }
-                }, 2500);
-            } else throw new Error(result);
-        } catch(err) {
-            if (statusEl) {
-                statusEl.innerHTML = '✗ Gagal';
-                statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600';
-            }
-        }
-    }
-    
-    // ========== LOAD PESAN ==========
-    function loadMessages() {
-        const container = document.getElementById('pesanContainer');
-        const script = document.createElement('script');
-        script.src = `${scriptURL}?getMessages=true&callback=handleMessagesData`;
-        script.onerror = function() {
-            container.innerHTML = '<div class="bg-white rounded-2xl border border-red-200 p-8 text-center"><p class="text-red-600">Gagal memuat pesan</p></div>';
-        };
-        document.body.appendChild(script);
-    }
-    
-    function handleMessagesData(messages) {
-        const container = document.getElementById('pesanContainer');
-        if (!messages || !messages.length) {
-            container.innerHTML = '<div class="bg-white rounded-2xl border border-stone-200 p-8 text-center"><p class="text-stone-500">📭 Belum ada pesan masuk</p></div>';
-            return;
-        }
-        
-        window.allMessages = messages;
-        renderPesanList(messages);
-        
-        setTimeout(() => {
-            const searchInput = document.getElementById('searchPesanInput');
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    filterPesanList();
-                });
-            }
-        }, 100);
-    }
-
-    // Fungsi render list pesan (dengan filter)
-    function renderPesanList(messages) {
-        const container = document.getElementById('pesanContainer');
-        if (!container) return;
-        
-        if (!messages || !messages.length) {
-            container.innerHTML = '<div class="bg-white rounded-2xl border border-stone-200 p-8 text-center"><p class="text-stone-500">📭 Belum ada pesan masuk</p></div>';
-            return;
-        }
-        
-        let html = `
-            <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-                <div class="px-5 py-3 bg-stone-50 border-b border-stone-100 flex flex-wrap justify-between items-center gap-3">
-                    <div>
-                        <h2 class="text-sm font-semibold text-stone-700">💬 Daftar Pesan Booking</h2>
-                        <p class="text-xs text-stone-400">${messages.length} pesan</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="searchPesanInput" placeholder="🔍 Cari nama / WA..." class="text-sm px-3 py-1.5 border border-stone-300 rounded-lg w-48 focus:ring-1 focus:ring-amber-500 focus:border-amber-500">
-                        <button onclick="refreshMessages()" class="text-xs bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-lg transition">🔄 Refresh</button>
-                    </div>
-                </div>
-                <div id="pesanListContainer" class="divide-y divide-stone-100">
-        `;
-        
-        messages.forEach((msg, idx) => {
-            let waRaw = msg.whatsapp;
-            let waNumber = '';
-            if (waRaw) {
-                waNumber = String(waRaw).replace(/[^0-9]/g, '');
-                if (waNumber.startsWith('0')) {
-                     waNumber = '62' + waNumber.substring(1);
-                } else if (waNumber.startsWith('8') && waNumber.length >= 10) {
-                    waNumber = '62' + waNumber;
-                }
-            }
-            let waDisplay = waNumber ? waNumber : (waRaw || '-');
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="text-xl font-bold text-amber-900 mb-2 flex items-center gap-2">📸 Galeri Dokumentasi (Tab Galeri)</h3>
+            <p class="text-xs text-slate-500 mb-4">Masukkan semua link foto dokumentasi. **Pisahkan setiap link dengan menekan tombol Enter (Satu baris, satu link)**.</p>
             
-            html += `
-                <div class="p-4 hover:bg-stone-50/50 transition border-l-4 border-l-transparent hover:border-l-amber-300">
-                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-                        <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="font-bold text-stone-800">${escapeHtml(msg.nama)}</span>
-                                <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">${escapeHtml(msg.paket)}</span>
-                                <span class="text-xs text-stone-400">${escapeHtml(msg.waktu)}</span>
-                            </div>
-                            <p class="text-sm text-stone-600"><span class="text-stone-400">📅 Acara:</span> ${escapeHtml(msg.tanggalAcara) || '-'}</p>
-                            <p class="text-sm text-stone-600 mt-1"><span class="text-stone-400">📝 Pesan:</span> ${escapeHtml(msg.pesan) || '-'}</p>
-                            <p class="text-xs text-stone-400 mt-1"><span class="text-stone-400">📞 WA:</span> ${escapeHtml(waDisplay)}</p>
-                        </div>
-                        <div class="flex flex-row md:flex-col gap-2 flex-shrink-0">
-                            ${waNumber ? `<a href="https://wa.me/${waNumber}?text=Halo%20${encodeURIComponent(msg.nama)}%2C%20terima%20kasih%20telah%20menghubungi%20kami..." target="_blank" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition shadow-sm">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.972 3.6 1.488 5.571 1.487 5.522 0 10.012-4.49 10.012-10.011 0-2.672-1.041-5.184-2.931-7.074-1.89-1.89-4.401-2.93-7.073-2.93-5.523 0-10.012 4.49-10.012 10.012 0 1.894.531 3.74 1.537 5.336l.496.788-1.079 3.942 4.064-1.062.792.514zm5.941-5.998c-.338-.152-1.987-.966-2.281-1.076-.274-.118-.483-.18-.698.18-.215.36-.826 1.068-1.017 1.292-.191.224-.372.254-.71.092-.913-.453-1.906-1.114-2.597-2.008-.208-.27-.319-.54-.319-.786 0-.247.059-.356.149-.506.09-.15.188-.27.281-.405.094-.135.149-.236.224-.394.075-.158.037-.292-.019-.41-.056-.118-.648-1.564-.888-2.14-.234-.562-.472-.485-.65-.494-.175-.009-.375-.011-.575-.011-.2 0-.525.075-.8.375-.275.3-1.05 1.027-1.05 2.5 0 1.474 1.074 2.9 1.224 3.101.15.202 2.105 3.227 5.104 4.525.714.309 1.27.493 1.705.63.716.227 1.367.195 1.882.118.575-.086 1.787-.73 2.039-1.435.252-.705.252-1.31.177-1.435-.075-.125-.275-.202-.575-.354z"/></svg>
-                                WA
-                            </a>` : '<span class="text-stone-400 text-xs text-center">No WA</span>'}
-                            <button onclick="hapusPesan(${idx})" class="inline-flex items-center justify-center gap-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition shadow-sm">
-                                🗑️ Hapus
-                            </button>
-                        </div>
-                    </div>
+            <form onsubmit="saveGalleryBulk(event)" class="space-y-3">
+                <div>
+                    <textarea id="gallery_textarea" rows="8" class="w-full border border-slate-300 p-4 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none font-mono text-xs leading-relaxed" placeholder="https://images.unsplash.com/photo-1...\nhttps://images.unsplash.com/photo-2..."></textarea>
                 </div>
-            `;
-        });
-        
-        html += `</div></div>`;
-        container.innerHTML = html;
-        
-        const searchInput = document.getElementById('searchPesanInput');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', function() {
-                filterPesanList();
+                <div class="flex justify-end">
+                    <button type="submit" id="btn-gallery-bulk" class="bg-amber-700 hover:bg-amber-800 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition shadow-sm flex items-center gap-2">
+                        💾 Simpan Semua Gambar Ke Tab Galeri
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbytTqkazoRJ5I850ewt0ZXbA76sV7MP1PEeZv3my1s-CKqJJF5k-cRRsLR1rwj_6Ib5/exec';
+
+        function handleAdminContent(response) {
+            const container = document.getElementById('textFormContainer');
+            const galleryTextarea = document.getElementById('gallery_textarea');
+            
+            // 1. Render data link dari tab "Galeri" ke dalam textarea tunggal
+            if (response.galeri && response.galeri.length > 0) {
+                galleryTextarea.value = response.galeri.join('\n');
+            }
+
+            // 2. Render form teks dari tab "Konten"
+            if (response.konten && response.konten.length > 0) {
+                container.innerHTML = '';
+                response.konten.forEach(item => {
+                    let idClean = item.id ? item.id.trim() : '';
+                    if(!idClean || idClean.startsWith('gallery-img')) return; // Lewati sisa id gallery-img usang
+
+                    const formBox = document.createElement('form');
+                    formBox.className = "flex flex-col md:flex-row md:items-end gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100";
+                    formBox.onsubmit = (e) => saveTextData(e, idClean);
+
+                    formBox.innerHTML = `
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">${idClean}</label>
+                            <input type="text" name="deskripsi" value="${item.deskripsi || ''}" class="w-full border border-slate-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                        </div>
+                        <button type="submit" id="btn-${idClean}" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-lg transition shadow-sm">
+                            Simpan
+                        </button>
+                    `;
+                    container.appendChild(formBox);
+                });
+            }
+        }
+
+        function saveTextData(e, id) {
+            e.preventDefault();
+            const button = document.getElementById(`btn-${id}`);
+            const inputValue = e.target.querySelector('input[name="deskripsi"]').value;
+            button.disabled = true;
+            button.innerHTML = "Proses...";
+            sendData(id, inputValue, button, "Simpan");
+        }
+
+        function saveGalleryBulk(e) {
+            e.preventDefault();
+            const button = document.getElementById('btn-gallery-bulk');
+            const textareaValue = document.getElementById('gallery_textarea').value;
+            
+            // Gabung link baris baru jadi satu string dipisahkan '||'
+            const formattedLinks = textareaValue.split('\n').map(link => link.trim()).filter(link => link !== '').join('||');
+
+            button.disabled = true;
+            button.innerHTML = "Menata Baris Sheet...";
+            sendData('gallery-bulk-save', formattedLinks, button, "💾 Simpan Semua Gambar Ke Tab Galeri");
+        }
+
+        function sendData(id, value, button, originalText) {
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('deskripsi', value);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(response => {
+                alert(response.message || "Berhasil diperbarui!");
+                button.disabled = false;
+                button.innerHTML = originalText;
+            })
+            .catch(err => {
+                alert("Gagal koneksi atau simpan, Bre!");
+                button.disabled = false;
+                button.innerHTML = originalText;
             });
         }
-    }
 
-    // Fungsi filter pesan
-    function filterPesanList() {
-        const searchInput = document.getElementById('searchPesanInput');
-        const keyword = searchInput?.value?.toLowerCase() || '';
-        
-        if (!window.allMessages) return;
-        
-        if (!keyword) {
-            renderPesanList(window.allMessages);
-            return;
-        }
-        
-        const filtered = window.allMessages.filter(msg => {
-            const nama = (msg.nama || '').toLowerCase();
-            const wa = String(msg.whatsapp || '');
-            return nama.includes(keyword) || wa.includes(keyword);
+        window.addEventListener('DOMContentLoaded', () => {
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?callback=handleAdminContent`;
+            document.body.appendChild(script);
         });
-        
-        renderPesanList(filtered);
-    }
-
-    // Fungsi refresh pesan (load ulang dari server)
-    function refreshMessages() {
-        const container = document.getElementById('pesanContainer');
-        if (container) {
-            container.innerHTML = '<div class="bg-white rounded-2xl border border-stone-200 p-8 text-center"><div class="inline-block animate-spin-slow w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full"></div><p class="text-stone-500 mt-3 text-sm">Memuat ulang pesan...</p></div>';
-        }
-        loadMessages();
-    }
-
-    // Fungsi hapus pesan (panggil backend)
-    function hapusPesan(index) {
-        const msg = window.allMessages?.[index];
-        if (!msg) {
-            console.error("Pesan tidak ditemukan, index:", index);
-            return;
-        }
-        
-        Swal.fire({
-            title: 'Hapus pesan?',
-            text: `Hapus pesan dari ${msg.nama || 'pengirim'}?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Menghapus...',
-                    text: 'Mohon tunggu',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); }
-                });
-                
-                const formData = new FormData();
-                formData.append('action', 'hapusPesan');
-                formData.append('timestamp', msg.waktu);
-                formData.append('nama', msg.nama);
-                
-                fetch(scriptURL, { method: 'POST', body: formData })
-                    .then(res => res.text())
-                    .then(result => {
-                        console.log("Response hapus:", result);
-                        if (result.includes('✅')) {
-                            Swal.fire('Terhapus!', 'Pesan berhasil dihapus.', 'success');
-                            refreshMessages();
-                        } else {
-                            Swal.fire('Gagal!', result, 'error');
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error hapus pesan:", err);
-                        Swal.fire('Error!', 'Gagal menghapus pesan: ' + err.message, 'error');
-                    });
-            }
-        });
-    }
-    
-    // ========== UTILITY ==========
-    function escapeHtml(text) {
-        if (!text) return '';
-        return String(text).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    // INIT
-    window.onload = function() {
-        loadKonten();
-    };
-</script>
+    </script>
 </body>
 </html>

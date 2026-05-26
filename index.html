@@ -239,46 +239,53 @@
         }
 
         // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
-        function handleHomeContent(response) {
-            let data = Array.isArray(response) ? response : (response && response.konten ? response.konten : []);
+function handleHomeContent(response) {
+    // Cek apakah response ada, jika tidak ada hentikan proses biar gak crash
+    if (!response) {
+        console.warn("Data dari Apps Script kosong atau tidak terbaca, Bre!");
+        return;
+    }
 
-            if (!data || data.length === 0) {
-                console.warn("Data dari Apps Script kosong, Bre!");
-                return;
-            }
+    // 1. PROSES DATA TEKS (DARI TAB KONTEN)
+    let teksData = Array.isArray(response) ? response : (response && response.konten ? response.konten : []);
+    
+    if (teksData && teksData.length > 0) {
+        teksData.forEach(item => {
+            if (!item.id) return;
+            let idClean = item.id.trim();
+            
+            // Lewati ID gallery lama agar tidak merusak elemen text/layout lain
+            if (idClean.startsWith('gallery-img')) return; 
 
-            // Pisahkan penampung gambar untuk slideshow
-            let extractedImages = [];
-
-            data.forEach(item => {
-                if(!item.id) return;
-                const element = document.getElementById(item.id.trim());
-                if (element) {
-                    if (element.tagName === 'IMG') {
-                        element.src = item.deskripsi || '';
-                    } else {
-                        element.innerHTML = item.deskripsi || '';
-                    }
+            const element = document.getElementById(idClean);
+            if (element) {
+                if (element.tagName === 'IMG') {
+                    element.src = item.deskripsi || '';
+                } else {
+                    element.innerHTML = item.deskripsi || '';
                 }
-                
-                // Masukkan gambar galeri (gallery-img1, gallery-img2, dst) ke array slideshow
-                if (item.id.trim().startsWith('gallery-img') && item.deskripsi) {
-                    extractedImages.push(item.deskripsi);
-                }
-            });
-
-            // Inisialisasi jalannya slideshow
-            if(extractedImages.length > 0) {
-                setupSlideshow(extractedImages);
             }
-        }
-
-        // Panggil data dari Google Sheet via JSONP script injection
-        window.addEventListener('DOMContentLoaded', () => {
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?callback=handleHomeContent`;
-            document.body.appendChild(script);
         });
+    }
+
+    // 2. PROSES DATA GAMBAR SLIDESHOW (MURNI DARI TAB GALERI)
+    // Langsung mengambil data array link bersih dari response.galeri
+    let galeriData = response && response.galeri ? response.galeri : [];
+    
+    if (galeriData && galeriData.length > 0) {
+        // Jalankan kompartemen slideshow dengan array link gambar otomatis
+        setupSlideshow(galeriData);
+    } else {
+        console.warn("Array gambar di tab Galeri kosong, Bre!");
+    }
+}
+
+// Panggil data dari Google Sheet via JSONP script injection
+window.addEventListener('DOMContentLoaded', () => {
+    const script = document.createElement('script');
+    script.src = `${scriptURL}?callback=handleHomeContent`;
+    document.body.appendChild(script);
+});
     </script>
 </body>
 </html>
