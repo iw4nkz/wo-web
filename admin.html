@@ -24,13 +24,16 @@
                 <p class="text-amber-100 text-sm">Kelola website & pantau pesanan</p>
             </div>
             <div class="flex bg-amber-900 p-1 rounded-xl gap-1">
-                <button onclick="switchTab('konten-panel')" id="btnKonten" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition tab-active">
-                    📝 Konten & Galeri
-                </button>
-                <button onclick="switchTab('pesan-panel')" id="btnPesan" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition text-amber-200 hover:text-white">
-                    💬 Pesan Masuk <span id="pesan-count" class="ml-1">(0)</span>
-                </button>
-            </div>
+    <button onclick="switchTab('konten-panel')" id="btnKonten" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition tab-active">
+        📝 Konten & Galeri
+    </button>
+    <button onclick="switchTab('pesan-panel')" id="btnPesan" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition text-amber-200 hover:text-white">
+        💬 Pesan Masuk <span id="pesan-count" class="ml-1">(0)</span>
+    </button>
+    <button onclick="switchTab('wa-panel')" id="btnWa" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition text-amber-200 hover:text-white">
+        📱 Auto-Reply WA
+    </button>
+</div>
         </div>
     </div>
 
@@ -84,6 +87,43 @@
             </div>
         </div>
 
+        <!-- TAB TEMPLATE WA -->
+<div id="wa-panel" class="tab-content hidden">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h3 class="text-xl font-bold text-amber-900 mb-2">📱 Auto-Reply WhatsApp</h3>
+        <p class="text-sm text-slate-500 mb-4">Pesan otomatis akan dikirim ke tamu setelah mereka mengirim formulir booking.</p>
+        
+        <div class="mb-4 flex items-center gap-4">
+            <label class="font-semibold text-slate-700">Status Auto-Reply:</label>
+            <div class="flex items-center gap-2">
+                <input type="radio" name="waStatus" id="waAktif" value="true"> <label for="waAktif" class="text-green-600">✅ Aktif</label>
+                <input type="radio" name="waStatus" id="waNonaktif" value="false" class="ml-3"> <label for="waNonaktif" class="text-red-600">⛔ Nonaktif</label>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block font-semibold text-slate-700 mb-2">📝 Template Pesan</label>
+            <p class="text-xs text-slate-400 mb-2">Gunakan placeholder: <code class="bg-slate-100 px-1 rounded">{nama}</code> <code class="bg-slate-100 px-1 rounded">{paket}</code> <code class="bg-slate-100 px-1 rounded">{tanggal}</code></p>
+            <textarea id="waTemplate" rows="6" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-amber-500 font-mono text-sm"></textarea>
+        </div>
+        
+        <button onclick="saveTemplateWA()" id="btnSaveWa" class="bg-amber-700 hover:bg-amber-800 text-white font-semibold px-5 py-2 rounded-lg transition">
+            💾 Simpan Template WA
+        </button>
+        
+        <div class="mt-6 p-4 bg-slate-50 rounded-xl">
+            <h4 class="font-bold text-slate-700 mb-2">📌 Preview Pesan</h4>
+            <div id="waPreview" class="text-sm text-slate-600 italic bg-white p-3 rounded-lg border border-slate-200">
+                Template akan tampil di sini
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-amber-50 rounded-xl text-xs text-amber-700">
+            💡 <span class="font-bold">Catatan:</span> Untuk mengaktifkan pengiriman WA otomatis, kamu perlu daftar di <a href="https://fonnte.com" target="_blank" class="underline">Fonnte.com</a> (gratis 100 pesan/hari) dan tambahkan token di kode GAS.
+        </div>
+    </div>
+</div>
+
     </main>
 
     <script>
@@ -91,21 +131,26 @@
         
         // ========== SWITCH TAB ==========
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('tab-active', 'bg-amber-700', 'text-white');
-                btn.classList.add('text-amber-200');
-            });
-            
-            const activeBtn = tabId === 'konten-panel' ? 'btnKonten' : 'btnPesan';
-            const btn = document.getElementById(activeBtn);
-            btn.classList.add('tab-active', 'bg-amber-700', 'text-white');
-            btn.classList.remove('text-amber-200');
-            
-            if (tabId === 'pesan-panel') loadPesanData();
-        }
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('tab-active', 'bg-amber-700', 'text-white');
+        btn.classList.add('text-amber-200');
+    });
+    
+    let activeBtn;
+    if (tabId === 'konten-panel') activeBtn = 'btnKonten';
+    else if (tabId === 'pesan-panel') activeBtn = 'btnPesan';
+    else activeBtn = 'btnWa';
+    
+    const btn = document.getElementById(activeBtn);
+    btn.classList.add('tab-active', 'bg-amber-700', 'text-white');
+    btn.classList.remove('text-amber-200');
+    
+    if (tabId === 'pesan-panel') loadPesanData();
+    if (tabId === 'wa-panel') loadTemplateWA();
+}
         
         // ========== LOAD KONTEN & GALERI ==========
         function loadData() {
@@ -278,6 +323,72 @@
         window.onload = () => {
             loadData();
         };
+    
+    // ========== LOAD TEMPLATE WA ==========
+function loadTemplateWA() {
+    const script = document.createElement('script');
+    script.src = `${scriptURL}?getTemplate=true&callback=handleTemplateData&t=${Date.now()}`;
+    document.body.appendChild(script);
+}
+
+function handleTemplateData(response) {
+    // Ambil dari endpoint khusus atau dari response utama
+    if (response && response.template) {
+        document.getElementById('waTemplate').value = response.template;
+        if (response.aktif === true || response.aktif === 'true') {
+            document.getElementById('waAktif').checked = true;
+        } else {
+            document.getElementById('waNonaktif').checked = true;
+        }
+        updatePreviewWA();
+    }
+}
+
+function updatePreviewWA() {
+    const template = document.getElementById('waTemplate').value;
+    const preview = document.getElementById('waPreview');
+    if (preview) {
+        let previewText = template
+            .replace(/{nama}/g, '<span class="text-amber-700 font-bold">[Nama Tamu]</span>')
+            .replace(/{paket}/g, '<span class="text-amber-700 font-bold">[Paket]</span>')
+            .replace(/{tanggal}/g, '<span class="text-amber-700 font-bold">[Tanggal Acara]</span>');
+        preview.innerHTML = previewText || '<span class="text-slate-400">Ketik template pesan di atas...</span>';
+    }
+}
+
+function saveTemplateWA() {
+    const template = document.getElementById('waTemplate').value;
+    const aktif = document.querySelector('input[name="waStatus"]:checked')?.value === 'true';
+    
+    if (!template.trim()) {
+        Swal.fire('Error!', 'Template pesan tidak boleh kosong!', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('action', 'saveTemplateWA');
+    formData.append('template', template);
+    formData.append('aktif', aktif);
+    
+    fetch(scriptURL, { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                Swal.fire('Berhasil!', 'Template WA tersimpan', 'success');
+            } else {
+                Swal.fire('Gagal!', res.message, 'error');
+            }
+        })
+        .catch(() => Swal.fire('Error!', 'Gagal menyimpan', 'error'));
+}
+
+// Update preview saat user mengetik
+document.addEventListener('DOMContentLoaded', () => {
+    const waTextarea = document.getElementById('waTemplate');
+    if (waTextarea) {
+        waTextarea.addEventListener('input', updatePreviewWA);
+    }
+});
     </script>
 </body>
 </html>
