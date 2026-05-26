@@ -3,7 +3,7 @@
 <head>
     <link rel="icon" href="data:,">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>WO Pangkalan Bun | Mewujudkan Pernikahan Impian</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
 
     <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md shadow-sm p-4">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-amber-700">Cita & Rias</h1>
+            <h1 id="brand-name" class="text-2xl font-bold text-amber-700">Cita & Rias</h1>
             <div class="space-x-6 hidden md:block">
                 <a href="#" class="hover:text-amber-600 transition">Home</a>
                 <a href="#paket" class="hover:text-amber-600 transition">Paket</a>
@@ -67,8 +67,7 @@
             
             <div class="relative max-w-4xl mx-auto overflow-hidden rounded-2xl shadow-xl bg-gray-100">
                 <div class="relative h-80 md:h-96 w-full">
-                    <div id="slideshowTrack" class="flex w-full h-full transition-transform duration-500 ease-out">
-                        </div>
+                    <div id="slideshowTrack" class="flex w-full h-full transition-transform duration-500 ease-out"></div>
                     
                     <button id="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition z-10">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
@@ -139,31 +138,38 @@
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('responseMsg');
 
-        // Form Submit handler
-        form.addEventListener('submit', e => {
+        // ========== FORM SUBMIT ==========
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             btn.disabled = true;
-            btn.innerHTML = "Mengirim...";
+            btn.innerHTML = "⏳ Mengirim...";
+            msg.classList.add('hidden');
             
-            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-            .then(response => {
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: new FormData(form) });
+                const result = await response.json();
+                
                 btn.disabled = false;
                 btn.innerHTML = "KIRIM JADWAL KONSULTASI";
                 msg.classList.remove('hidden');
-                msg.innerHTML = "Terima kasih! Kami akan segera menghubungi kamu via WA.";
-                msg.classList.add('text-green-600');
+                msg.innerHTML = result.message || "✅ Terima kasih! Kami akan segera menghubungi Anda.";
+                msg.className = "mt-4 text-center font-semibold text-green-600 bg-green-50 p-3 rounded-lg";
                 form.reset();
-            })
-            .catch(error => {
+                
+                setTimeout(() => {
+                    msg.classList.add('hidden');
+                }, 5000);
+            } catch(error) {
                 btn.disabled = false;
                 btn.innerHTML = "KIRIM JADWAL KONSULTASI";
                 msg.classList.remove('hidden');
-                msg.innerHTML = "Oops, terjadi kesalahan. Coba lagi, Bre!";
-                msg.classList.add('text-red-600');
-            });
+                msg.innerHTML = "❌ Gagal mengirim. Coba lagi, Bre!";
+                msg.className = "mt-4 text-center font-semibold text-red-600 bg-red-50 p-3 rounded-lg";
+                console.error(error);
+            }
         });
 
-        // MANAJEMEN SLIDESHOW GALERI
+        // ========== SLIDESHOW GALERI ==========
         let galleryImages = [];
         let currentSlide = 0;
         let slideInterval;
@@ -171,30 +177,30 @@
         function setupSlideshow(images) {
             const track = document.getElementById('slideshowTrack');
             const dotsContainer = document.getElementById('slideDots');
-            if (!track || !images.length) return;
+            
+            if (!track || !images || !images.length) {
+                if (track) track.innerHTML = '<div class="w-full h-full flex items-center justify-center text-slate-400">Belum ada gambar galeri</div>';
+                return;
+            }
 
             galleryImages = images;
             track.innerHTML = '';
             dotsContainer.innerHTML = '';
 
-            // Buat elemen gambar slider secara dinamis
             images.forEach((imgSrc, idx) => {
                 const slide = document.createElement('div');
                 slide.className = 'w-full h-full flex-shrink-0 relative';
                 slide.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover" alt="Event ${idx+1}" onerror="this.src='https://via.placeholder.com/800x500?text=Gambar+Gagal+Load'">`;
                 track.appendChild(slide);
 
-                // Buat indikator dot
                 const dot = document.createElement('button');
                 dot.className = `w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-amber-400 w-4' : 'bg-white/60 hover:bg-white/80'}`;
                 dot.onclick = () => goToSlide(idx);
                 dotsContainer.appendChild(dot);
             });
 
-            // Jalankan auto slide tiap 4 detik
             startAutoSlide();
-
-            // Set tombol manual navigasi
+            
             document.getElementById('prevSlide').onclick = () => changeSlide(-1);
             document.getElementById('nextSlide').onclick = () => changeSlide(1);
         }
@@ -216,7 +222,7 @@
             const track = document.getElementById('slideshowTrack');
             const dots = document.getElementById('slideDots').children;
             if (!track) return;
-
+            
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
             
             for (let i = 0; i < dots.length; i++) {
@@ -225,6 +231,7 @@
         }
 
         function startAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
             slideInterval = setInterval(() => {
                 if (galleryImages.length) {
                     currentSlide = (currentSlide + 1) % galleryImages.length;
@@ -238,54 +245,50 @@
             startAutoSlide();
         }
 
-        // FUNGSI UTAMA UNTUK MENERIMA DATA (Bypass CORS via JSONP)
-function handleHomeContent(response) {
-    // Cek apakah response ada, jika tidak ada hentikan proses biar gak crash
-    if (!response) {
-        console.warn("Data dari Apps Script kosong atau tidak terbaca, Bre!");
-        return;
-    }
-
-    // 1. PROSES DATA TEKS (DARI TAB KONTEN)
-    let teksData = Array.isArray(response) ? response : (response && response.konten ? response.konten : []);
-    
-    if (teksData && teksData.length > 0) {
-        teksData.forEach(item => {
-            if (!item.id) return;
-            let idClean = item.id.trim();
-            
-            // Lewati ID gallery lama agar tidak merusak elemen text/layout lain
-            if (idClean.startsWith('gallery-img')) return; 
-
-            const element = document.getElementById(idClean);
-            if (element) {
-                if (element.tagName === 'IMG') {
-                    element.src = item.deskripsi || '';
-                } else {
-                    element.innerHTML = item.deskripsi || '';
-                }
+        // ========== LOAD DATA DARI GAS ==========
+        function handleHomeContent(response) {
+            if (!response) {
+                console.warn("Data kosong dari server");
+                return;
             }
+            
+            // 1. Proses teks konten
+            const teksData = response.konten || [];
+            teksData.forEach(item => {
+                if (!item.id) return;
+                const idClean = item.id.trim();
+                const element = document.getElementById(idClean);
+                if (element) {
+                    if (element.tagName === 'IMG') {
+                        element.src = item.deskripsi || '';
+                    } else {
+                        element.innerHTML = item.deskripsi || '-';
+                    }
+                }
+            });
+            
+            // 2. Proses galeri slideshow
+            const galeriData = response.galeri || [];
+            if (galeriData.length > 0) {
+                setupSlideshow(galeriData);
+            } else {
+                console.warn("Array gambar di tab Galeri kosong");
+            }
+        }
+
+        // Load data saat halaman dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?callback=handleHomeContent`;
+            script.onerror = function() {
+                console.error("Gagal memuat data dari server");
+                const heroTitle = document.getElementById('hero-title');
+                const aboutText = document.getElementById('about-text');
+                if (heroTitle) heroTitle.innerHTML = "Wedding Organizer Pangkalan Bun";
+                if (aboutText) aboutText.innerHTML = "Mewujudkan pernikahan impian Anda dengan pelayanan terbaik.";
+            };
+            document.body.appendChild(script);
         });
-    }
-
-    // 2. PROSES DATA GAMBAR SLIDESHOW (MURNI DARI TAB GALERI)
-    // Langsung mengambil data array link bersih dari response.galeri
-    let galeriData = response && response.galeri ? response.galeri : [];
-    
-    if (galeriData && galeriData.length > 0) {
-        // Jalankan kompartemen slideshow dengan array link gambar otomatis
-        setupSlideshow(galeriData);
-    } else {
-        console.warn("Array gambar di tab Galeri kosong, Bre!");
-    }
-}
-
-// Panggil data dari Google Sheet via JSONP script injection
-window.addEventListener('DOMContentLoaded', () => {
-    const script = document.createElement('script');
-    script.src = `${scriptURL}?callback=handleHomeContent`;
-    document.body.appendChild(script);
-});
     </script>
 </body>
 </html>

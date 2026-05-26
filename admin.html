@@ -2,30 +2,33 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Kamar Admin | WO Pangkalan Bun</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'Poppins', sans-serif; background: #f5f3ef; }
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .tab-active { background: #b45309; color: white; }
+        .animate-spin-slow { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
+<body class="min-h-screen pb-12">
 
-    <div class="bg-amber-700 text-white shadow-md p-6 mb-6">
+    <div class="bg-amber-800 text-white shadow-md p-6 mb-6">
         <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold">Kamar Kendali Admin</h1>
-                <p class="text-amber-100 text-sm">Kelola website & pantau pesanan WO Pangkalan Bun</p>
+                <h1 class="text-3xl font-bold">🏠 Kamar Admin</h1>
+                <p class="text-amber-100 text-sm">Kelola website & pantau pesanan</p>
             </div>
-            
-            <div class="flex bg-amber-800 p-1 rounded-xl shadow-inner">
-                <button onclick="switchTab('konten-panel', this)" class="tab-btn bg-amber-600 text-white font-semibold px-5 py-2 rounded-lg text-sm transition">
-                    📝 Kelola Konten & Galeri
+            <div class="flex bg-amber-900 p-1 rounded-xl gap-1">
+                <button onclick="switchTab('konten-panel')" id="btnKonten" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition tab-active">
+                    📝 Konten & Galeri
                 </button>
-                <button onclick="switchTab('pesan-panel', this)" class="tab-btn text-amber-200 hover:text-white font-semibold px-5 py-2 rounded-lg text-sm transition">
-                    💌 Pesan Masuk (<span id="pesan-count">0</span>)
+                <button onclick="switchTab('pesan-panel')" id="btnPesan" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition text-amber-200 hover:text-white">
+                    💬 Pesan Masuk <span id="pesan-count" class="ml-1">(0)</span>
                 </button>
             </div>
         </div>
@@ -33,55 +36,48 @@
 
     <main class="max-w-5xl mx-auto px-4">
         
+        <!-- TAB KONTEN & GALERI -->
         <div id="konten-panel" class="tab-content space-y-6">
-            
+            <!-- Form Teks Konten -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">📂 Teks & Konten Utama Website</h3>
-                <div id="textFormContainer" class="space-y-4">
-                    <p class="text-slate-500 italic text-sm">Mengambil data teks...</p>
+                <h3 class="text-xl font-bold text-amber-900 mb-4">📝 Teks & Konten Website</h3>
+                <div id="textFormContainer" class="space-y-3">
+                    <p class="text-slate-400 italic">Memuat data...</p>
                 </div>
             </div>
 
+            <!-- Form Galeri Bulk -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="text-xl font-bold text-amber-900 mb-2 flex items-center gap-2">📸 Galeri Dokumentasi (Tab Galeri)</h3>
-                <p class="text-xs text-slate-500 mb-4">Masukkan semua link foto dokumentasi. **Pisahkan setiap link dengan menekan tombol Enter (Satu baris, satu link)**.</p>
-                
-                <form onsubmit="saveGalleryBulk(event)" class="space-y-3">
-                    <div>
-                        <textarea id="gallery_textarea" rows="8" class="w-full border border-slate-300 p-4 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none font-mono text-xs leading-relaxed" placeholder="https://images.unsplash.com/photo-1...\nhttps://images.unsplash.com/photo-2..."></textarea>
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="submit" id="btn-gallery-bulk" class="bg-amber-700 hover:bg-amber-800 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition shadow-sm flex items-center gap-2">
-                            💾 Simpan Semua Gambar Ke Tab Galeri
-                        </button>
-                    </div>
-                </form>
+                <h3 class="text-xl font-bold text-amber-900 mb-2">📸 Galeri Slideshow</h3>
+                <p class="text-xs text-slate-500 mb-3">Pisahkan setiap link gambar dengan baris baru (Enter).</p>
+                <textarea id="gallery_textarea" rows="6" class="w-full border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-amber-500 font-mono text-sm"></textarea>
+                <button onclick="saveGalleryBulk()" id="btnGallery" class="mt-4 bg-amber-700 hover:bg-amber-800 text-white font-semibold px-5 py-2 rounded-lg transition">
+                    💾 Simpan Galeri
+                </button>
             </div>
         </div>
 
-
+        <!-- TAB PESAN MASUK -->
         <div id="pesan-panel" class="tab-content hidden">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-amber-900 flex items-center gap-2">💌 Jadwal Konsultasi & Booking Masuk</h3>
-                    <button onclick="location.reload()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg border font-medium">🔄 Refresh Data</button>
+                    <h3 class="text-xl font-bold text-amber-900">💬 Pesan Booking Masuk</h3>
+                    <button onclick="refreshPesan()" class="text-sm bg-slate-100 px-3 py-1.5 rounded-lg">🔄 Refresh</button>
                 </div>
-
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider border-b border-slate-200">
-                                <th class="p-4 font-bold">Nama Pengantin</th>
-                                <th class="p-4 font-bold">WhatsApp</th>
-                                <th class="p-4 font-bold">Tanggal Acara</th>
-                                <th class="p-4 font-bold">Pilihan Paket</th>
-                                <th class="p-4 font-bold">Catatan / Pesan</th>
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-3 text-sm">Nama</th>
+                                <th class="p-3 text-sm">WhatsApp</th>
+                                <th class="p-3 text-sm">Tanggal Acara</th>
+                                <th class="p-3 text-sm">Paket</th>
+                                <th class="p-3 text-sm">Pesan</th>
+                                <th class="p-3 text-sm">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="pesanTableBody" class="text-sm divide-y divide-slate-100">
-                            <tr>
-                                <td colspan="5" class="p-8 text-center text-slate-400 italic">Mengambil data pesan dari sheet...</td>
-                            </tr>
+                        <tbody id="pesanTableBody">
+                            <tr><td colspan="6" class="p-8 text-center text-slate-400">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -92,143 +88,177 @@
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbytTqkazoRJ5I850ewt0ZXbA76sV7MP1PEeZv3my1s-CKqJJF5k-cRRsLR1rwj_6Ib5/exec';
-
-        // Fungsi Ganti Tampilan Tab Menu Bersebelahan
-        function switchTab(panelId, element) {
-            // Sembunyikan semua panel
-            document.querySelectorAll('.tab-content').forEach(panel => panel.classList.add('hidden'));
-            // Matikan style aktif semua tombol
+        
+        // ========== SWITCH TAB ==========
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-600', 'text-white');
+                btn.classList.remove('tab-active', 'bg-amber-700', 'text-white');
                 btn.classList.add('text-amber-200');
             });
-
-            // Tampilkan panel yang dipilih
-            document.getElementById(panelId).classList.remove('hidden');
-            // Aktifkan style tombol yang diklik
-            element.classList.add('bg-amber-600', 'text-white');
-            element.classList.remove('text-amber-200');
-        }
-
-        // FUNGSI UTAMA JSONP: MENAMPILKAN SEMUA DATA DARI APPS SCRIPT
-        function handleAdminContent(response) {
-            const container = document.getElementById('textFormContainer');
-            const galleryTextarea = document.getElementById('gallery_textarea');
-            const tableBody = document.getElementById('pesanTableBody');
-            const pesanCountEl = document.getElementById('pesan-count');
             
-            // 1. Ambil & Masukkan data link Gambar ke Textarea Tunggal
-            if (response.galeri && response.galeri.length > 0) {
-                galleryTextarea.value = response.galeri.join('\n');
-            }
-
-            // 2. Ambil & Buat form input Teks Konten Utama
-            if (response.konten && response.konten.length > 0) {
-                container.innerHTML = '';
-                response.konten.forEach(item => {
-                    let idClean = item.id ? item.id.trim() : '';
-                    if(!idClean || idClean.startsWith('gallery-img')) return; // Lewati sisa id gallery-img lama
-
-                    const formBox = document.createElement('form');
-                    formBox.className = "flex flex-col md:flex-row md:items-end gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100";
-                    formBox.onsubmit = (e) => saveTextData(e, idClean);
-
-                    formBox.innerHTML = `
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">${idClean}</label>
-                            <input type="text" name="deskripsi" value="${item.deskripsi || ''}" class="w-full border border-slate-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-white">
-                        </div>
-                        <button type="submit" id="btn-${idClean}" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-lg transition shadow-sm">
-                            Simpan
-                        </button>
-                    `;
-                    container.appendChild(formBox);
-                });
-            }
-
-            // 3. RENDERING DATA TAB PESAN YANG SEMPAT HILANG
-            if (response.pesan && response.pesan.length > 0) {
-                tableBody.innerHTML = '';
-                pesanCountEl.innerText = response.pesan.length; // Update counter angka di tab menu
-
-                response.pesan.reverse().forEach(p => { // reverse() biar pesan paling baru ada di atas
-                    const row = document.createElement('tr');
-                    row.className = "hover:bg-slate-50/80 transition-colors";
-                    
-                    // Format tanggal rapi
-                    let tglTampil = p.tanggal;
-                    if(p.tanggal && p.tanggal.includes('T')) {
-                        tglTampil = p.tanggal.split('T')[0];
-                    }
-
-                    row.innerHTML = `
-                        <td class="p-4 font-semibold text-slate-700">${p.nama || '-'}</td>
-                        <td class="p-4">
-                            <a href="https://wa.me/${p.whatsapp}" target="_blank" class="text-amber-700 hover:underline inline-flex items-center gap-1 font-medium">
-                                🟢 ${p.whatsapp || '-'}
-                            </a>
-                        </td>
-                        <td class="p-4 text-slate-600">${tglTampil || '-'}</td>
-                        <td class="p-4"><span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">${p.paket || '-'}</span></td>
-                        <td class="p-4 text-slate-500 max-w-xs truncate" title="${p.pesan || ''}">${p.pesan || '-'}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } else {
-                tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Belum ada pesan booking masuk, Bre!</td></tr>`;
-                pesanCountEl.innerText = '0';
-            }
-        }
-
-        // Fungsi Simpan Teks Konten
-        function saveTextData(e, id) {
-            e.preventDefault();
-            const button = document.getElementById(`btn-${id}`);
-            const inputValue = e.target.querySelector('input[name="deskripsi"]').value;
-            button.disabled = true;
-            button.innerHTML = "Proses...";
-            sendData(id, inputValue, button, "Simpan");
-        }
-
-        // Fungsi Simpan Bulk Galeri Textarea
-        function saveGalleryBulk(e) {
-            e.preventDefault();
-            const button = document.getElementById('btn-gallery-bulk');
-            const textareaValue = document.getElementById('gallery_textarea').value;
+            const activeBtn = tabId === 'konten-panel' ? 'btnKonten' : 'btnPesan';
+            const btn = document.getElementById(activeBtn);
+            btn.classList.add('tab-active', 'bg-amber-700', 'text-white');
+            btn.classList.remove('text-amber-200');
             
-            const formattedLinks = textareaValue.split('\n').map(link => link.trim()).filter(link => link !== '').join('||');
-
-            button.disabled = true;
-            button.innerHTML = "Menata Baris Sheet...";
-            sendData('gallery-bulk-save', formattedLinks, button, "💾 Simpan Semua Gambar Ke Tab Galeri");
+            if (tabId === 'pesan-panel') loadPesanData();
         }
-
-        // Fungsi Core Ajax POST
-        function sendData(id, value, button, originalText) {
-            const formData = new FormData();
-            formData.append('id', id);
-            formData.append('deskripsi', value);
-
-            fetch(scriptURL, { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(response => {
-                alert(response.message || "Berhasil diperbarui!");
-                button.disabled = false;
-                button.innerHTML = originalText;
-            })
-            .catch(err => {
-                alert("Gagal koneksi atau simpan, Bre!");
-                button.disabled = false;
-                button.innerHTML = originalText;
-            });
-        }
-
-        // Pemicu ambil data pertama kali
-        window.addEventListener('DOMContentLoaded', () => {
+        
+        // ========== LOAD KONTEN & GALERI ==========
+        function loadData() {
             const script = document.createElement('script');
             script.src = `${scriptURL}?callback=handleAdminContent`;
             document.body.appendChild(script);
-        });
+        }
+        
+        function handleAdminContent(response) {
+            // Render Teks Konten
+            const container = document.getElementById('textFormContainer');
+            const galleryTextarea = document.getElementById('gallery_textarea');
+            
+            if (response.konten && response.konten.length) {
+                container.innerHTML = '';
+                response.konten.forEach(item => {
+                    if (!item.id) return;
+                    const div = document.createElement('div');
+                    div.className = 'flex flex-col sm:flex-row gap-2 items-center';
+                    div.innerHTML = `
+                        <div class="flex-1 w-full">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">${item.id}</label>
+                            <input type="text" id="input-${item.id}" value="${escapeHtml(item.deskripsi || '')}" class="w-full border border-slate-300 p-2 rounded-lg text-sm">
+                        </div>
+                        <button onclick="updateKonten('${item.id}')" class="bg-slate-700 text-white px-4 py-2 rounded-lg text-sm whitespace-nowrap">💾 Simpan</button>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+            
+            // Render Galeri (ke textarea)
+            if (response.galeri && response.galeri.length) {
+                galleryTextarea.value = response.galeri.join('\n');
+            }
+        }
+        
+        function updateKonten(id) {
+            const value = document.getElementById(`input-${id}`).value;
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('deskripsi', value);
+            
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(res => {
+                    Swal.fire('Berhasil!', res.message, 'success');
+                })
+                .catch(() => Swal.fire('Gagal!', 'Coba lagi', 'error'));
+        }
+        
+        function saveGalleryBulk() {
+            const value = document.getElementById('gallery_textarea').value;
+            const formData = new FormData();
+            formData.append('id', 'gallery-bulk-save');
+            formData.append('deskripsi', value.split('\n').filter(l => l.trim()).join('||'));
+            
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(res => {
+                    Swal.fire('Berhasil!', res.message, 'success');
+                    loadData();
+                })
+                .catch(() => Swal.fire('Gagal!', 'Coba lagi', 'error'));
+        }
+        
+        // ========== LOAD PESAN ==========
+        function loadPesanData() {
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?callback=handlePesanData`;
+            document.body.appendChild(script);
+        }
+        
+        function handlePesanData(response) {
+            const tbody = document.getElementById('pesanTableBody');
+            const pesanCount = document.getElementById('pesan-count');
+            const messages = response.pesan || [];
+            
+            pesanCount.innerText = messages.length;
+            
+            if (!messages.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400">Belum ada pesan masuk</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            messages.reverse().forEach((msg, idx) => {
+                const row = tbody.insertRow();
+                const waNumber = String(msg.whatsapp || '').replace(/[^0-9]/g, '');
+                const finalWa = waNumber.startsWith('0') ? '62' + waNumber.substring(1) : (waNumber.startsWith('8') ? '62' + waNumber : waNumber);
+                
+                row.innerHTML = `
+                    <td class="p-3 font-medium">${escapeHtml(msg.nama)}</td>
+                    <td class="p-3"><a href="https://wa.me/${finalWa}" target="_blank" class="text-green-600 hover:underline">${escapeHtml(msg.whatsapp)}</a></td>
+                    <td class="p-3">${escapeHtml(msg.tanggal)}</td>
+                    <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs">${escapeHtml(msg.paket)}</span></td>
+                    <td class="p-3 max-w-xs truncate">${escapeHtml(msg.pesan)}</td>
+                    <td class="p-3"><button onclick="hapusPesan(${idx})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs">🗑️ Hapus</button></td>
+                `;
+            });
+            
+            window.currentMessages = messages;
+        }
+        
+        function hapusPesan(index) {
+            const msg = window.currentMessages?.[index];
+            if (!msg) return;
+            
+            Swal.fire({
+                title: 'Hapus pesan?',
+                text: `Hapus pesan dari ${msg.nama}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.append('action', 'hapusPesan');
+                    formData.append('nama', msg.nama);
+                    formData.append('tanggal', msg.tanggal);
+                    
+                    fetch(scriptURL, { method: 'POST', body: formData })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.status === 'success') {
+                                Swal.fire('Terhapus!', res.message, 'success');
+                                loadPesanData();
+                            } else {
+                                Swal.fire('Gagal!', res.message, 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error!', 'Gagal menghapus', 'error'));
+                }
+            });
+        }
+        
+        function refreshPesan() {
+            loadPesanData();
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        window.onload = () => {
+            loadData();
+        };
     </script>
 </body>
 </html>
